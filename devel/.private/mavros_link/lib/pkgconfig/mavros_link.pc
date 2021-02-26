@@ -1,8 +1,0 @@
-prefix=/home/leekai/drone_ws/devel/.private/mavros_link
-
-Name: mavros_link
-Description: Description of mavros_link
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

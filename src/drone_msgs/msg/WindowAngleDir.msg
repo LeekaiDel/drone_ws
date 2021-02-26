@@ -1,3 +1,0 @@
-bool found_window
-float32 width_angle
-float32 height_angle

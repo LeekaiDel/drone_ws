@@ -1,8 +1,0 @@
-prefix=/home/leekai/drone_ws/devel/.private/drone_msgs
-
-Name: drone_msgs
-Description: Description of drone_msgs
-Version: 0.0.0
-Cflags: -I/home/leekai/drone_ws/devel/.private/drone_msgs/include
-Libs: -L${prefix}/lib 
-Requires: message_runtime

@@ -1,1 +1,0 @@
-/home/leekai/drone_ws/devel/.private/mavros_link/lib/pkgconfig/mavros_link.pc

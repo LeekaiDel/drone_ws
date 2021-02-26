@@ -1,1 +1,0 @@
-/home/leekai/drone_ws/devel/.private/potential_planner/lib/pkgconfig/potential_planner.pc

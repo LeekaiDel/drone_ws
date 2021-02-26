@@ -1,6 +1,0 @@
-devel_space: /home/leekai/drone_ws/devel
-install: false
-install_space: /home/leekai/drone_ws/install
-profile: default
-source_space: /home/leekai/drone_ws/src
-workspace: /home/leekai/drone_ws

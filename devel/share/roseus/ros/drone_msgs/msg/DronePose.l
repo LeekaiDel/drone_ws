@@ -1,1 +1,0 @@
-/home/leekai/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/DronePose.l
