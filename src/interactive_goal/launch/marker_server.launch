@@ -1,0 +1,18 @@
+<launch>
+
+	<!-- start  marker_server_node -->
+	<node pkg="interactive_goal" name="marker_server_node" type="marker_server" 	respawn="true" output="screen">
+		<remap from="/goal_pose" to="/geo/goal_pose"/>
+	</node>
+
+
+	<!--<node pkg="interactive_goal" name="goal_pose_zigzag" type="goal_pose_zigzag.py" 	respawn="true" output="screen">-->
+			<!--<param name="angle_rotate" value="15.0"/>-->
+			<!--<param name="angle_speed" value="2.0"/>-->
+	<!--</node>-->
+
+	<!--<node pkg="interactive_goal" name="swarm_marker_node" type="swarm_marker.py" 	respawn="true" output="screen">-->
+			<!--<param name="param" value="$(find interactive_goal)/param/config.yaml"/>-->
+			<!--<param name="max_vel" value="0.5"/>-->
+	<!--</node>-->
+</launch>

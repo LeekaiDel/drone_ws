@@ -1,0 +1,51 @@
+<launch>
+    <!-- laod prams from environment variables -->
+    <arg name="frame_id" default="drone"/>
+    <param name="robot_description" textfile="$(find drone_bringup)/configuration_files/fixed_joint.urdf" />
+
+
+	<!--Init state of the drone-->
+	<node pkg="drone_bringup" name="init_tf_node" type="init_state.py" output="screen" />
+
+	<!-- fixed_joint-->
+	<node pkg="robot_state_publisher" name="drone_fixed_joints_pub" type="robot_state_publisher" output="screen">
+		<param name="publish_frequency" value="50.0"/>
+	</node>
+
+	<!--read distance data from ground lidar-->
+	<node pkg="drone_bringup" name="altitude_filter_node" type="ground_lidar_seek_ros.py" respawn="true" output="screen">
+	  <param name="port" value="/dev/lidar"/>
+	</node>
+
+	<!--Added tf relative height from ground lidar-->
+	<node pkg="drone_bringup" name="msg_to_tf_node" type="msg_to_tf2.py" respawn="true" output="screen" />
+
+
+	<!-- run PX4 mavros run -->
+	<include file="$(find mavros_link)/launch/px4_slam.launch">
+		<arg name="tgt_system" default="$(env DRONE_ID)"/>
+		<arg name="tgt_component" default="$(env DRONE_ID)" />
+		<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)"/>
+		<arg name="fcu_url" default="$(env MAVROS_FCU_URL)" />
+		<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)" />
+	</include>
+
+	<!-- run Safemode server -->
+	<node pkg="drone_bringup" name="drone_safery" type="drone_safe_node.py" 	respawn="true" output="screen">
+		<param name="max_angle" value="$(env DRONE_SAFE_MAX_ANGLE)"/>
+		<param name="disarm_delay" value="$(env DRONE_SAFE_DISARM_DELAY)"/>
+	</node>
+
+	<!-- run PX4 rplidar -->
+	<include file="$(find drone_bringup)/launch/rplidar.launch"/>
+
+	<!-- remote control-->
+<!--
+	<node pkg="drone_remote_control" name="remote_control_node" type="remote_control.py" respawn="true"/>
+-->
+	<!-- run Rosbridge server -->
+<!--
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+	</include>	
+-->
+</launch>
