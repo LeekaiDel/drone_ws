@@ -1,0 +1,10 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~run" : \b [bool] Power status of planner min: False, default: True, max: True
+- \b "~r_field" : \b [double] Radius of field min: 0.0, default: 1.5, max: 10.0
+- \b "~c_rep" : \b [double] Field coefficient min: 0.0, default: 0.4, max: 10.0
+- \b "~k_vel" : \b [double] Field velocity coefficient min: 0.0, default: 1.0, max: 20.0
+- \b "~angle_vec" : \b [double] The angle of rotation of the repulsion vector min: -180.0, default: 0.0, max: 180.0
+

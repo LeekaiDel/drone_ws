@@ -1,0 +1,25 @@
+(cl:defpackage drone_msgs-msg
+  (:use )
+  (:export
+   "<DIAGNOSTICS>"
+   "DIAGNOSTICS"
+   "<DRONEINFO>"
+   "DRONEINFO"
+   "<DRONEINFOARRAY>"
+   "DRONEINFOARRAY"
+   "<DRONEPOSE>"
+   "DRONEPOSE"
+   "<GOAL>"
+   "GOAL"
+   "<LOCALPLANNERSTATE>"
+   "LOCALPLANNERSTATE"
+   "<ROOMPARAMS>"
+   "ROOMPARAMS"
+   "<STRIKE>"
+   "STRIKE"
+   "<WINDOWANGLEDIR>"
+   "WINDOWANGLEDIR"
+   "<WINDOWPOINTDIR>"
+   "WINDOWPOINTDIR"
+  ))
+

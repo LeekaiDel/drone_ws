@@ -1,0 +1,7 @@
+set(potential_planner_SETUP_PY_SETUP_MODULE "distutils.core")
+set(potential_planner_SETUP_PY_VERSION "0.0.0")
+set(potential_planner_SETUP_PY_SCRIPTS "")
+set(potential_planner_SETUP_PY_PACKAGES "potential_planner")
+set(potential_planner_SETUP_PY_PACKAGE_DIRS "scripts/potential_planner")
+set(potential_planner_SETUP_PY_MODULES "")
+set(potential_planner_SETUP_PY_MODULE_DIRS "")

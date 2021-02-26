@@ -1,0 +1,4 @@
+[ 33%] Built target potential_planner_gencfg
+[ 66%] [32mBuilding CXX object CMakeFiles/potential_planner_cpp_node.dir/src/potential_planner.cpp.o[0m
+[100%] [32m[1mLinking CXX executable /home/leekai/drone_ws/devel/.private/potential_planner/lib/potential_planner/potential_planner_cpp_node[0m
+[100%] Built target potential_planner_cpp_node

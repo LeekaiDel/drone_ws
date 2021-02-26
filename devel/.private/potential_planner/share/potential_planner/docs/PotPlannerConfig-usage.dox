@@ -1,0 +1,11 @@
+\subsubsection usage Usage
+\verbatim
+<node name="potential_planner" pkg="potential_planner" type="potential_planner">
+  <param name="run" type="bool" value="True" />
+  <param name="r_field" type="double" value="1.5" />
+  <param name="c_rep" type="double" value="0.4" />
+  <param name="k_vel" type="double" value="1.0" />
+  <param name="angle_vec" type="double" value="0.0" />
+</node>
+\endverbatim
+

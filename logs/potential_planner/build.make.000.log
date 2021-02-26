@@ -1,0 +1,17 @@
+[35m[1mScanning dependencies of target potential_planner_gencfg[0m
+[ 33%] [34m[1mGenerating dynamic reconfigure files from cfg/PotPlanner.cfg: /home/leekai/drone_ws/devel/.private/potential_planner/include/potential_planner/PotPlannerConfig.h /home/leekai/drone_ws/devel/.private/potential_planner/lib/python2.7/dist-packages/potential_planner/cfg/PotPlannerConfig.py[0m
+Generating reconfiguration files for PotPlanner in potential_planner
+Wrote header file in /home/leekai/drone_ws/devel/.private/potential_planner/include/potential_planner/PotPlannerConfig.h
+[ 33%] Built target potential_planner_gencfg
+[35m[1mScanning dependencies of target potential_planner_cpp_node[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/potential_planner_cpp_node.dir/src/potential_planner.cpp.o[0m
+[01m[K/home/leekai/drone_ws/src/potential_planner/src/potential_planner.cpp:10:10:[m[K [01;31m[Kfatal error: [m[Ktf2_sensor_msgs/tf2_sensor_msgs.h: No such file or directory
+ #include [01;31m[K<tf2_sensor_msgs/tf2_sensor_msgs.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+CMakeFiles/potential_planner_cpp_node.dir/build.make:62: recipe for target 'CMakeFiles/potential_planner_cpp_node.dir/src/potential_planner.cpp.o' failed
+make[2]: *** [CMakeFiles/potential_planner_cpp_node.dir/src/potential_planner.cpp.o] Error 1
+CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/potential_planner_cpp_node.dir/all' failed
+make[1]: *** [CMakeFiles/potential_planner_cpp_node.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2
