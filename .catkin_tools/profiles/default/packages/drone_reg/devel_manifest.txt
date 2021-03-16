@@ -1,0 +1,15 @@
+drone_reg
+/home/dale/drone_ws/devel/.private/drone_reg/cmake.lock /home/dale/drone_ws/devel/./cmake.lock
+/home/dale/drone_ws/devel/.private/drone_reg/include/drone_reg/DroneRegConfig.h /home/dale/drone_ws/devel/include/drone_reg/DroneRegConfig.h
+/home/dale/drone_ws/devel/.private/drone_reg/share/drone_reg/docs/DroneRegConfig-usage.dox /home/dale/drone_ws/devel/share/drone_reg/docs/DroneRegConfig-usage.dox
+/home/dale/drone_ws/devel/.private/drone_reg/share/drone_reg/docs/DroneRegConfig.wikidoc /home/dale/drone_ws/devel/share/drone_reg/docs/DroneRegConfig.wikidoc
+/home/dale/drone_ws/devel/.private/drone_reg/share/drone_reg/docs/DroneRegConfig.dox /home/dale/drone_ws/devel/share/drone_reg/docs/DroneRegConfig.dox
+/home/dale/drone_ws/devel/.private/drone_reg/share/drone_reg/cmake/drone_regConfig-version.cmake /home/dale/drone_ws/devel/share/drone_reg/cmake/drone_regConfig-version.cmake
+/home/dale/drone_ws/devel/.private/drone_reg/share/drone_reg/cmake/drone_regConfig.cmake /home/dale/drone_ws/devel/share/drone_reg/cmake/drone_regConfig.cmake
+/home/dale/drone_ws/devel/.private/drone_reg/bin/drone_reg_node /home/dale/drone_ws/devel/bin/drone_reg_node
+/home/dale/drone_ws/devel/.private/drone_reg/bin/cmake.lock /home/dale/drone_ws/devel/bin/cmake.lock
+/home/dale/drone_ws/devel/.private/drone_reg/lib/pkgconfig/drone_reg.pc /home/dale/drone_ws/devel/lib/pkgconfig/drone_reg.pc
+/home/dale/drone_ws/devel/.private/drone_reg/lib/drone_reg/drone_reg_cpp /home/dale/drone_ws/devel/lib/drone_reg/drone_reg_cpp
+/home/dale/drone_ws/devel/.private/drone_reg/lib/python2.7/dist-packages/drone_reg/__init__.py /home/dale/drone_ws/devel/lib/python2.7/dist-packages/drone_reg/__init__.py
+/home/dale/drone_ws/devel/.private/drone_reg/lib/python2.7/dist-packages/drone_reg/cfg/__init__.py /home/dale/drone_ws/devel/lib/python2.7/dist-packages/drone_reg/cfg/__init__.py
+/home/dale/drone_ws/devel/.private/drone_reg/lib/python2.7/dist-packages/drone_reg/cfg/DroneRegConfig.py /home/dale/drone_ws/devel/lib/python2.7/dist-packages/drone_reg/cfg/DroneRegConfig.py

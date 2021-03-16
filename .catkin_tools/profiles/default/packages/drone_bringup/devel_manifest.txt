@@ -1,0 +1,9 @@
+drone_bringup
+/home/dale/drone_ws/devel/.private/drone_bringup/cmake.lock /home/dale/drone_ws/devel/./cmake.lock
+/home/dale/drone_ws/devel/.private/drone_bringup/share/roseus/ros/drone_bringup/manifest.l /home/dale/drone_ws/devel/share/roseus/ros/drone_bringup/manifest.l
+/home/dale/drone_ws/devel/.private/drone_bringup/share/drone_bringup/cmake/drone_bringupConfig-version.cmake /home/dale/drone_ws/devel/share/drone_bringup/cmake/drone_bringupConfig-version.cmake
+/home/dale/drone_ws/devel/.private/drone_bringup/share/drone_bringup/cmake/drone_bringup-msg-extras.cmake /home/dale/drone_ws/devel/share/drone_bringup/cmake/drone_bringup-msg-extras.cmake
+/home/dale/drone_ws/devel/.private/drone_bringup/share/drone_bringup/cmake/drone_bringupConfig.cmake /home/dale/drone_ws/devel/share/drone_bringup/cmake/drone_bringupConfig.cmake
+/home/dale/drone_ws/devel/.private/drone_bringup/share/drone_bringup/cmake/drone_bringup-msg-paths.cmake /home/dale/drone_ws/devel/share/drone_bringup/cmake/drone_bringup-msg-paths.cmake
+/home/dale/drone_ws/devel/.private/drone_bringup/lib/pkgconfig/drone_bringup.pc /home/dale/drone_ws/devel/lib/pkgconfig/drone_bringup.pc
+/home/dale/drone_ws/devel/.private/drone_bringup/lib/python2.7/dist-packages/drone_bringup/__init__.py /home/dale/drone_ws/devel/lib/python2.7/dist-packages/drone_bringup/__init__.py
