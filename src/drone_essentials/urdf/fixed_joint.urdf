@@ -1,11 +1,8 @@
 <robot name="drone_fixed_joint">
 
-  
   <link name="base_link" />
   <link name="laser" />
   <link name="camera_link" />
-  <link name="elp_left_optical_frame" />
-  <link name="elp_right_optical_frame" />
 
   <joint name="laser_link" type="fixed">
     <parent link="base_link"/>
@@ -13,22 +10,10 @@
     <origin xyz="0.0 0.0 0.055" rpy="0 0 0"/>
   </joint>
 
-  <joint name="r200_link" type="fixed">
+  <joint name="realsense_link" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
     <origin xyz="0.1 0.0 -0.1" rpy="0.0 0.0 0.0"/>
-  </joint>
-
-    <joint name="elp_left_link" type="fixed">
-    <parent link="camera_link"/>
-    <child link="elp_left_optical_frame"/>
-    <origin xyz="0.0 0.03 0.0" rpy=" 1.57 3.14 1.57"/>
-  </joint>
-
-    <joint name="elp_right_link" type="fixed">
-    <parent link="camera_link"/>
-    <child link="elp_right_optical_frame"/>
-    <origin xyz="0.0 -0.03 0.0" rpy=" 1.57 3.14 1.57"/>
   </joint>
 
 </robot>

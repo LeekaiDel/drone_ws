@@ -1,3 +1,5 @@
+.catkin_tools
+.gitignore
 /build
 /devel
 /logs
