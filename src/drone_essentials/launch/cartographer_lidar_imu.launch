@@ -1,10 +1,10 @@
 <launch>
 		<!-- Load robot description and start state publisher-->
-    <!--
-    <param name="robot_description" textfile="$(find gbot_core)/urdf/head_2d.urdf" />
+    
+    <param name="robot_description" textfile="$(find drone_essentials)/urdf/fixed_joint.urdf" />
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-    -->	
+    	
 		<!-- Start RPLIDAR sensor node which provides LaserScan data  -->
     <!--
     <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
@@ -20,8 +20,8 @@
           -configuration_directory
               $(find drone_essentials)/cartographer_conf
           -configuration_basename lidar_2d.lua" output="screen">
-	<remap from="odom" to="mavros/local_position/odom" />
-	<remap from="imu" to="mavros/imu/data" />
+	<!--remap from="odom" to="mavros/local_position/odom" /-->
+	<!--remap from="imu" to="mavros/imu/data" /-->
 
     </node>
 
