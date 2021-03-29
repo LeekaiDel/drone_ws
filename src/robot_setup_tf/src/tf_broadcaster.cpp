@@ -30,7 +30,7 @@ int main(int argc, char** argv){
     broadcaster.sendTransform(
       tf::StampedTransform(
         tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.1)),
-        ros::Time::now(),"base_link", "rplidar_link"));
+        ros::Time::now(),"base_link", "laser"));
     broadcaster2.sendTransform(
       tf::StampedTransform(
         tf::Transform(tf::Quaternion(0.5, -0.5, 0.5, -0.5), tf::Vector3(0.1, 0.0, 0.0)),
