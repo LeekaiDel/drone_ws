@@ -24,26 +24,26 @@ int main(int argc, char** argv){
   ros::Subscriber navPosSub;
   navPosSub = n.subscribe("/mavros/local_position/pose", 10, poseCallback);
 
-  tf::TransformBroadcaster broadcaster,broadcaster2,broadcaster3,broadcaster4;
+  // tf::TransformBroadcaster broadcaster,broadcaster2,broadcaster3,broadcaster4;
 
   while(n.ok()){
-    broadcaster.sendTransform(
-      tf::StampedTransform(
-        tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.1)),
-        ros::Time::now(),"base_link", "laser"));
-    broadcaster2.sendTransform(
-      tf::StampedTransform(
-        tf::Transform(tf::Quaternion(0.5, -0.5, 0.5, -0.5), tf::Vector3(0.1, 0.0, 0.0)),
-        ros::Time::now(),"base_link", "r200"));
-    broadcaster3.sendTransform(
-      tf::StampedTransform(
-        tf::Transform(tf::Quaternion(0, 1, 0, 1), tf::Vector3(0.05, 0.0, -0.05)),
-        ros::Time::now(),"base_link", "px4flow"));
-    broadcaster4.sendTransform(
-      tf::StampedTransform(
-        tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, -0.1)),
-        ros::Time::now(),"base_link", "robot_camera_link"));
-	ros::spinOnce();
+  //   broadcaster.sendTransform(
+  //     tf::StampedTransform(
+  //       tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.1)),
+  //       ros::Time::now(),"base_link", "laser"));
+  //   broadcaster2.sendTransform(
+  //     tf::StampedTransform(
+  //       tf::Transform(tf::Quaternion(0.5, -0.5, 0.5, -0.5), tf::Vector3(0.1, 0.0, 0.0)),
+  //       ros::Time::now(),"base_link", "r200"));
+  //   broadcaster3.sendTransform(
+  //     tf::StampedTransform(
+  //       tf::Transform(tf::Quaternion(0, 1, 0, 1), tf::Vector3(0.05, 0.0, -0.05)),
+  //       ros::Time::now(),"base_link", "px4flow"));
+  //   broadcaster4.sendTransform(
+  //     tf::StampedTransform(
+  //       tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, -0.1)),
+  //       ros::Time::now(),"base_link", "robot_camera_link"));
+	  ros::spinOnce();
     r.sleep();
   }
 }

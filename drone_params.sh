@@ -19,7 +19,7 @@ export MAVROS_FCU_PORT=14101
 
 export USE_MESH=False
 
-export DRONE_REG_USE_PLANNER=True
+export DRONE_REG_USE_PLANNER=False
 export DRONE_REG_USE_GEO_MODE=False
 
 export USE_POSE_REG=False

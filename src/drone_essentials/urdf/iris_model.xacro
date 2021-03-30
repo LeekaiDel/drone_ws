@@ -1,5 +1,6 @@
+<!-- DO NOT EDIT: Generated from iris.sdf.jinja -->
 <?xml version="1.0"?>
-<robot name="drone_fixed_joint">
+<robot name='iris'>
 
     <material name = "dark_gray">
       <color rgba = "0.3 0.3 0.3 1"/>
@@ -24,11 +25,10 @@
         <geometry>
           <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
         </geometry>
-        <origin xyz="0.13 -0.22 0.023"/>
         <material name = "blue" />
       </visual>
     </link>
-
+<!-- "0.13 -0.22 0.023" -->
     <joint name="rotor_0_joint" type="fixed">
         <parent link = "base_link"/>
         <child link = "rotor_0"/>
@@ -40,7 +40,6 @@
         <geometry>
           <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
         </geometry>
-        <origin xyz="-0.13 0.2 0.023"/>
         <material name = "blue" />
       </visual>
     </link>
@@ -56,7 +55,6 @@
         <geometry>
           <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
         </geometry>
-        <origin xyz="0.13 0.22 0.023"/>
         <material name = "blue" />
       </visual>
     </link>
@@ -72,7 +70,6 @@
         <geometry>
           <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
         </geometry>
-        <origin xyz="-0.13 -0.2 0.023"/>
         <material name = "blue" />
       </visual>
     </link>
@@ -89,7 +86,7 @@
     <joint name="laser_link" type="fixed">
       <parent link="base_link"/>
       <child link="laser"/>
-      <origin xyz="0.0 0.0 0.055" rpy="0 0 0"/>
+      <origin xyz="0.0 0.0 0.1" rpy="0 0 0"/>
     </joint>
 
     <link name="r200" />
@@ -97,8 +94,7 @@
     <joint name="realsense_link" type="fixed">
       <parent link="base_link"/>
       <child link="r200"/>
-      <origin xyz="0.1 0.0 0.0" rpy="-1.57 0.0 -1.57"/>
+      <origin xyz="0.1 0.0 0.0" rpy="-1.57 0 -1.57"/>
     </joint>
 
 </robot>
-
