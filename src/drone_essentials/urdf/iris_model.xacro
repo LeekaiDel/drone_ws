@@ -14,7 +14,7 @@
     <link name="base_link">
       <visual>
         <geometry>
-            <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris.stl"/>
+            <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris.stl"/>
         </geometry>
         <material name = "dark_gray" />
       </visual>
@@ -23,7 +23,7 @@
     <link name="rotor_0">
       <visual name="rotor_0_visual">
         <geometry>
-          <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
         </geometry>
         <material name = "blue" />
       </visual>
@@ -38,7 +38,7 @@
     <link name="rotor_1">
       <visual name="rotor_1_visual">
         <geometry>
-          <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
         </geometry>
         <material name = "blue" />
       </visual>
@@ -53,7 +53,7 @@
     <link name="rotor_2">
       <visual name="rotor_2_visual">
         <geometry>
-          <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
         </geometry>
         <material name = "blue" />
       </visual>
@@ -68,7 +68,7 @@
     <link name="rotor_3">
       <visual name="rotor_3_visual">
         <geometry>
-          <mesh filename= "file:///home/pc208/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
         </geometry>
         <material name = "blue" />
       </visual>
