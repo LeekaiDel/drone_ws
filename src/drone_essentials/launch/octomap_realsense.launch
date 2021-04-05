@@ -8,11 +8,19 @@
 -->
 <launch>
 	<node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
-		<param name="resolution" value="0.15" />
+		<param name="resolution" value="0.20" />
 		<!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
 		<param name="frame_id" type="string" value="map" />
-		<!-- maximum range to integrate (speedup!) -->
-		<param name="sensor_model/max_range" value="5.0" />
+		
+        <!--param name="base_frame_id " value="base_link" type="str"/-->
+        <!-- height encoding by different colors -->
+        <param name="height_map" value="False"/>
+        <!-- maximum range to integrate (speedup!) -->
+		<param name="sensor_model/max_range" value="8.0" />
+		<!-- Base frame of robot -->
+		<param name="base_frame_id" type="string" value="/base_link" />
+		<!-- Ground filter -->
+		<param name="filter_ground" value="False"/>
 		<!-- data source to integrate (PointCloud2) -->
 		<remap from="cloud_in" to="/r200/depth/points" />
 	</node>
