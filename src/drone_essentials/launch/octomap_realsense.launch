@@ -7,21 +7,31 @@
   www.ros.org/wiki/octomap_server for details  
 -->
 <launch>
-	<node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
-		<param name="resolution" value="0.20" />
+	<node pkg = "octomap_server" type="octomap_server_node" name="octomap_server">
+		<param name = "resolution" value="0.2" />
 		<!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
-		<param name="frame_id" type="string" value="map" />
-		
-        <!--param name="base_frame_id " value="base_link" type="str"/-->
-        <!-- height encoding by different colors -->
-        <param name="height_map" value="False"/>
-        <!-- maximum range to integrate (speedup!) -->
-		<param name="sensor_model/max_range" value="8.0" />
+		<param name = "frame_id" type="string" value="map" />
 		<!-- Base frame of robot -->
-		<param name="base_frame_id" type="string" value="/base_link" />
+		<param name = "base_frame_id" type="string" value="base_footprint" />
+
+        <!-- height encoding by different colors -->
+        <param name = "height_map" value="True"/>
+        <!-- maximum range to integrate (speedup!) -->
+		<param name = "sensor_model/max_range" value="5.0" />
+
 		<!-- Ground filter -->
-		<param name="filter_ground" value="False"/>
+		<param name = "filter_ground" value="True"/>
+		<param name = "ground_filter_angle" value="15.0" />
+		<param name = "ground_filter_distance" value="0.001" />
+		<param name = "ground_filter_plane_distance" value="0.5" />
+
+		<param name = "occupancy_min_z" value="0.0" />
+		<param name = "sensor_model/hit" value="0.7" />
+		<param name = "sensor_model/miss" value="0.08" />
+		<param name = "sensor_model_min" value="0.4" />
+		<param name = "sensor_model_max" value="0.8" />
+
 		<!-- data source to integrate (PointCloud2) -->
-		<remap from="cloud_in" to="/r200/depth/points" />
+		<remap from = "cloud_in" to="/r200/depth/points" />
 	</node>
 </launch>

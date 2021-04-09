@@ -5,15 +5,25 @@
 void poseCallback(const geometry_msgs::PoseStampedConstPtr& data){
   static tf::TransformBroadcaster br;
   tf::Transform transform;
+
+  tf::Transform transform_footprint;
+
   transform.setOrigin(tf::Vector3(data->pose.position.x,
                                   data->pose.position.y,
                                   data->pose.position.z));
+
+  transform_footprint.setOrigin(tf::Vector3(data->pose.position.x,
+                                  data->pose.position.y,
+                                  0.0));
   tf::Quaternion q(data->pose.orientation.x,
 				   data->pose.orientation.y,
 				   data->pose.orientation.z,
 				   data->pose.orientation.w);
   transform.setRotation(q);
+  transform_footprint.setRotation(q);
   br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "base_link"));
+  br.sendTransform(tf::StampedTransform(transform_footprint, ros::Time::now(), "map", "base_footprint"));
+
 }
 
 int main(int argc, char** argv){
