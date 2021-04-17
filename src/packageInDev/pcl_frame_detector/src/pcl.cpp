@@ -4,14 +4,18 @@
 #include <ros/ros.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <visualization_msgs/MarkerArray.h>
 //PCL libreries
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/filters/voxel_grid.h>
 
+//Параметры настройки фильтра
+float resolution_voxel_grid = 0.1;  //разрешение воксельной сетки
+//Глобальные переменные ROS
 ros::Publisher pub_filter_cloud;
 
-void cloud_cb(const pcl::PCLPointCloud2ConstPtr &cloud)
+void cloud_cb(const pcl::PCLPointCloud2ConstPtr &cloud_constPtr)
 {   
 
     // std::cout << *cloud << std::endl;
@@ -19,8 +23,8 @@ void cloud_cb(const pcl::PCLPointCloud2ConstPtr &cloud)
     pcl::PCLPointCloud2 cloud_filtered;
 
     pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-    sor.setInputCloud(cloud);
-    sor.setLeafSize(0.1, 0.1, 0.1);
+    sor.setInputCloud(cloud_constPtr);
+    sor.setLeafSize(resolution_voxel_grid, resolution_voxel_grid, resolution_voxel_grid);
     sor.filter(cloud_filtered);
 
     pub_filter_cloud.publish(cloud_filtered);
