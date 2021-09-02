@@ -1,6 +1,6 @@
 <!-- DO NOT EDIT: Generated from iris.sdf.jinja -->
 <?xml version="1.0"?>
-<robot name='iris'>
+<robot name='drone_fixed_joint'>
 
     <material name = "dark_gray">
       <color rgba = "0.3 0.3 0.3 1"/>
@@ -10,6 +10,16 @@
       <color rgba="0 0 1 1"/>
     </material>
     
+   <!-- iris model -->
+    <!-- <link name="drone">
+      <visual>
+        <geometry>
+            <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris.stl"/>
+        </geometry>
+        <material name = "dark_gray" />
+      </visual>
+    </link> -->
+
     <!-- iris model -->
     <link name="base_link">
       <visual>

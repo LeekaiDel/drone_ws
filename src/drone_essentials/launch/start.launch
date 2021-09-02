@@ -12,9 +12,9 @@
     <node pkg="robot_setup_tf" name="tf_broadcaster" type="tf_broadcaster"/>
 
     <!-- run octomap -->
-    <include file="$(find drone_essentials)/launch/octomap_realsense.launch"/>
+    <!-- <include file="$(find drone_essentials)/launch/octomap_realsense.launch"/> -->
 
     <!-- run reg -->
-    <include file="$(find drone_essentials)/launch/reg.launch"/>
+    <!-- <include file="$(find drone_essentials)/launch/reg.launch"/> -->
 
 </launch>
