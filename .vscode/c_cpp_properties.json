@@ -1,18 +1,18 @@
 {
   "configurations": [
-    {
-      "browse": {
-        "databaseFilename": "",
-        "limitSymbolsToIncludedHeaders": true
-      },
-      "includePath": [
-        "/home/leekaidel/drone_ws/devel/include/**",
-        "/opt/ros/noetic/include/**",
-        "/usr/include/**",
-        "/usr/share/doc/**"
-      ],
-      "name": "ROS"
-    }
+      {
+          "name": "Linux",
+          "includePath": [
+              "${workspaceFolder}/",
+              "/opt/ros/noetic/include/**",
+              "/usr/include/"            
+            ],
+          "defines": [],
+          "compilerPath": "/usr/bin/clang",
+          "cStandard": "c11",
+          "cppStandard": "c++14",
+          "intelliSenseMode": "linux-clang-x64"
+      }
   ],
   "version": 4
 }

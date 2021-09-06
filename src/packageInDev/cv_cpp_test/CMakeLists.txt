@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(drone_essentials)
+project(cv_cpp_test)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,13 +8,7 @@ project(drone_essentials)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  mavros
-  rospy
-  geometry_msgs
   roscpp
-  sensor_msgs
-  std_msgs
-  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -71,10 +65,11 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-)
+## Generate added messages and services with any dependencies listed here
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -107,8 +102,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES drone_essentials
-#  CATKIN_DEPENDS mavros rospy
+#  LIBRARIES cv_cpp_test
+#  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
 
@@ -125,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/drone_essentials.cpp
+#   src/${PROJECT_NAME}/cv_cpp_test.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -136,7 +131,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/drone_essentials_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/cv_cpp_test_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -200,10 +195,17 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_drone_essentials.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_cv_cpp_test.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# target_link_libraries(cv_cpp_test ${catkin_LIBRARIES})
+FIND_PACKAGE( OpenCV REQUIRED )                              # 环境变量中寻找OpenCV的库的位置  
+INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} )
+add_executable(cv_cpp_test src/cv_cpp_test.cpp)
+TARGET_LINK_LIBRARIES (cv_cpp_test ${OpenCV_LIBS})         # 这两行的次序也不能变!加入动态链接库  
+
