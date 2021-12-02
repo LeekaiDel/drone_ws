@@ -1,0 +1,110 @@
+<!-- DO NOT EDIT: Generated from iris.sdf.jinja -->
+<?xml version="1.0"?>
+<robot name='drone_fixed_joint'>
+
+    <material name = "dark_gray">
+      <color rgba = "0.3 0.3 0.3 1"/>
+    </material>
+
+    <material name = "blue">
+      <color rgba="0 0 1 1"/>
+    </material>
+    
+   <!-- iris model -->
+    <!-- <link name="drone">
+      <visual>
+        <geometry>
+            <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris.stl"/>
+        </geometry>
+        <material name = "dark_gray" />
+      </visual>
+    </link> -->
+
+    <!-- iris model -->
+    <link name="base_link">
+      <visual>
+        <geometry>
+            <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris.stl"/>
+        </geometry>
+        <material name = "dark_gray" />
+      </visual>
+    </link>
+  
+    <link name="rotor_0">
+      <visual name="rotor_0_visual">
+        <geometry>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
+        </geometry>
+        <material name = "blue" />
+      </visual>
+    </link>
+<!-- "0.13 -0.22 0.023" -->
+    <joint name="rotor_0_joint" type="fixed">
+        <parent link = "base_link"/>
+        <child link = "rotor_0"/>
+        <origin xyz="0.13 -0.22 0.023" rpy="0 0 0"/>
+    </joint>
+
+    <link name="rotor_1">
+      <visual name="rotor_1_visual">
+        <geometry>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_cw.dae"/>
+        </geometry>
+        <material name = "blue" />
+      </visual>
+    </link>
+
+    <joint name="rotor_1_joint" type="fixed">
+        <parent link = "base_link"/>
+        <child link = "rotor_1"/>
+        <origin xyz="-0.13 0.2 0.023"/>
+    </joint>
+
+    <link name="rotor_2">
+      <visual name="rotor_2_visual">
+        <geometry>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
+        </geometry>
+        <material name = "blue" />
+      </visual>
+    </link>
+
+    <joint name="rotor_2_joint" type="fixed">
+        <parent link = "base_link"/>
+        <child link = "rotor_2"/>
+        <origin xyz="0.13 0.22 0.023"/>
+    </joint>
+
+    <link name="rotor_3">
+      <visual name="rotor_3_visual">
+        <geometry>
+          <mesh filename= "file:///home/leekaidel/drone_ws/src/drone_essentials/meshes/iris_prop_ccw.dae"/>
+        </geometry>
+        <material name = "blue" />
+      </visual>
+    </link>
+
+    <joint name="rotor_3_joint" type="fixed">
+        <parent link = "base_link"/>
+        <child link = "rotor_3"/>
+        <origin xyz="-0.13 -0.2 0.023"/>
+    </joint>
+
+    <!-- Sensors links -->
+    <link name="laser" />
+    
+    <joint name="laser_link" type="fixed">
+      <parent link="base_link"/>
+      <child link="laser"/>
+      <origin xyz="0.0 0.0 0.1" rpy="0 0 0"/>
+    </joint>
+
+    <link name="r200" />
+    
+    <joint name="realsense_link" type="fixed">
+      <parent link="base_link"/>
+      <child link="r200"/>
+      <origin xyz="0.1 0.0 0.0" rpy="-1.57 0 -1.57"/>
+    </joint>
+
+</robot>

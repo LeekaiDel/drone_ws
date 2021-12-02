@@ -20,8 +20,8 @@
           -configuration_directory
               $(find drone_essentials)/cartographer_conf
           -configuration_basename lidar_2d.lua" output="screen">
-	<!--remap from="odom" to="mavros/local_position/odom" /-->
-	<!--remap from="imu" to="mavros/imu/data" /-->
+	      <!-- <remap from="odom" to="mavros/local_position/odom" /> -->
+	      <!-- <remap from="imu" to="mavros/imu/data" /> -->
 
     </node>
 

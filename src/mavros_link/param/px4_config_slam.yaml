@@ -204,7 +204,7 @@ vision_pose:
   tf:
     listen: true           # enable tf listener (disable topic subscribers)
     frame_id: "map"
-    child_frame_id: "base_link"
+    child_frame_id: "odom"
     rate_limit: 30.0
 
 # vision_speed_estimate
