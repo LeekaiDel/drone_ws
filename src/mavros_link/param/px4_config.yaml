@@ -236,8 +236,8 @@ px4flow:
 vision_pose:
   tf:
     listen: true           # enable tf listener (disable topic subscribers)
-    frame_id: "map_slam"
-    child_frame_id: "base_link"
+    frame_id: "t265_odom_frame"
+    child_frame_id: "t265_link"
     rate_limit: 10.0
 
 # vision_speed_estimate
