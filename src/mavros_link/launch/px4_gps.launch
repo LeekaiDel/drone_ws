@@ -1,12 +1,11 @@
-
 <launch>
 	<!-- vim: set ft=xml noet : -->
 	<!-- example launch script for PX4 based FCU's -->
 
-	<arg name="gcs_ip" default="192.168.128.101" />	
-	<arg name="fcu_port" default="14556" />	
-	<arg name="fcu_url" default="/dev/serial0:921600" />
-	<arg name="gcs_url" default="udp://:$(arg fcu_port)@$(arg gcs_ip):14550" />
+	<!-- <arg name="gcs_ip" default="192.168.128.101" />	 -->
+	<!-- <arg name="fcu_port" default="14556" />	 -->
+	<arg name="fcu_url" default="/dev/ttyACM0:57600" />
+	<arg name="gcs_url" default="" />
 	<!--<arg name="gcs_url" default="tcp-l://:14556" />-->
 
 	<arg name="tgt_system" default="1" />
@@ -17,7 +16,7 @@
 
 	<include file="$(find mavros)/launch/node.launch">
 		<arg name="pluginlists_yaml" value="$(find mavros_link)/param/px4_pluginlists.yaml" />
-		<arg name="config_yaml" value="$(find mavros_link)/param/px4_config_rtls.yaml" />
+		<arg name="config_yaml" value="$(find mavros_link)/param/px4_config_gps.yaml" />
 		<param name="system_id" value="$(arg tgt_system)" />
 		<arg name="tgt_component" value="1" />		
 		<arg name="fcu_url" value="$(arg fcu_url)" />

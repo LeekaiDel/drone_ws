@@ -4,7 +4,7 @@
 
 	<!-- <arg name="gcs_ip" default="192.168.128.101" />	 -->
 	<!-- <arg name="fcu_port" default="14556" />	 -->
-	<arg name="fcu_url" default="/dev/ttyACM0:57600" />
+	<arg name="fcu_url" default="/dev/ttyTHS1:921600" />
 	<arg name="gcs_url" default="" />
 	<!--<arg name="gcs_url" default="tcp-l://:14556" />-->
 
@@ -16,7 +16,7 @@
 
 	<include file="$(find mavros)/launch/node.launch">
 		<arg name="pluginlists_yaml" value="$(find mavros_link)/param/px4_pluginlists.yaml" />
-		<arg name="config_yaml" value="$(find mavros_link)/param/px4_config_slam.yaml" />
+		<arg name="config_yaml" value="$(find mavros_link)/param/px4_config_realsense.yaml" />
 		<param name="system_id" value="$(arg tgt_system)" />
 		<arg name="tgt_component" value="1" />		
 		<arg name="fcu_url" value="$(arg fcu_url)" />
