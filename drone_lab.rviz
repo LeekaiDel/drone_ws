@@ -53,7 +53,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 0.30000001192092896
+    - Alpha: 1
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
@@ -136,7 +136,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: laser
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -160,7 +160,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.453707695007324
+      Distance: 10.440065383911133
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -176,9 +176,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.909796953201294
+      Pitch: 0.8397958278656006
       Target Frame: <Fixed Frame>
-      Yaw: 0.6422290802001953
+      Yaw: 3.82220196723938
     Saved: ~
 Window Geometry:
   Displays:
