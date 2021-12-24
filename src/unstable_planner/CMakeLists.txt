@@ -1,28 +1,27 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(potential_planner)
+project(unstable_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rospy
-  roscpp
-  tf
   dynamic_reconfigure
-  std_msgs
-  drone_msgs
-  sensor_msgs
-  mavros_msgs
   geometry_msgs
-  laser_geometry
-  pcl_ros
-  )
+  mavros_msgs
+  drone_msgs
+  interactive_markers
+  visualization_msgs
+  roscpp
+  rospy
+  sensor_msgs
+  std_msgs
+  tf
+)
 
 find_package(yaml-cpp)
-find_package(Eigen3 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -57,9 +56,7 @@ catkin_python_setup()
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-generate_dynamic_reconfigure_options(
-  cfg/PotPlanner.cfg
-  )
+
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
@@ -85,7 +82,7 @@ generate_dynamic_reconfigure_options(
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   geometry_msgs#   mavros_msgs#   sensor_msgs#   std_msgs
 # )
 
 ################################################
@@ -108,22 +105,26 @@ generate_dynamic_reconfigure_options(
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/unstableCfg.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
 ## The catkin_package macro generates cmake config files for your package
 ## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
+## INCLUDE_DIRS: uncomment this if you package contains header files
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  #  INCLUDE_DIRS include
-  #  LIBRARIES potential_planner
-  #  CATKIN_DEPENDS rospy tf
-  #  DEPENDS system_lib
-  DEPENDS eigen
-  )
+#  INCLUDE_DIRS include
+#  LIBRARIES unstable_planner
+#  CATKIN_DEPENDS dynamic_reconfigure geometry_msgs mavros_msgs message_generation roscpp rospy sensor_msgs std_msgs tf
+#  DEPENDS system_lib
+CATKIN_DEPENDS dynamic_reconfigure
+)
 
 ###########
 ## Build ##
@@ -132,26 +133,15 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  # include
+# include
   ${catkin_INCLUDE_DIRS}
-  )
-include_directories(${EIGEN_INCLUDE_DIRS})
+)
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-add_executable(potential_planner_cpp_node
-  src/potential_planner.cpp
-  src/potential_planner.h)
 
-add_dependencies(potential_planner_cpp_node ${PROJECT_NAME}_gencfg)
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(potential_planner_cpp_node yaml-cpp
-  ${catkin_LIBRARIES}
-  )
-
-catkin_install_python(PROGRAMS bin/potential_planner
+catkin_install_python(PROGRAMS bin/unstable_old
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
+)
 
+catkin_install_python(PROGRAMS bin/unstable_new
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

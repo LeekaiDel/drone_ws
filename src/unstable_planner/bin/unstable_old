@@ -1,0 +1,7 @@
+#! /usr/bin/env python
+
+import unstable_planner.unstable_old
+
+
+if __name__ == '__main__':
+    unstable_planner.unstable_old.main()

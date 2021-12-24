@@ -28,7 +28,7 @@ angle_vec = 0.0                 # Угол на который поворачи�
 # True - point_cloud2
 # False - lidar
 input_point2 = False
-use_drone_list = False
+use_drone_list = True
 use_one_point = True
 
 # Инициализация глобальных переменных

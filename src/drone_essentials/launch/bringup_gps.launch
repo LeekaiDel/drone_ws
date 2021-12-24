@@ -4,13 +4,13 @@
     <param name="robot_description" textfile="$(find drone_essentials)/urdf/iris_model.xacro" />
     
     <!-- run PX4 mavros run -->
-	<include file="$(find mavros_link)/launch/px4_gps.launch">
+	<!-- <include file="$(find mavros_link)/launch/px4_gps.launch">
 		<arg name="tgt_system" default="$(env DRONE_ID)"/>
 		<arg name="tgt_component" default="$(env DRONE_ID)" />
 		<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)"/>
 		<arg name="fcu_url" default="$(env MAVROS_FCU_URL)" />
 		<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)" />
-	</include>
+	</include> -->
 	
     <!-- fixed_joint-->
 	<node pkg="robot_state_publisher" name="drone_fixed_joints_pub" type="robot_state_publisher" output="screen">

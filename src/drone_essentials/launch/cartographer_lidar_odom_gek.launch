@@ -20,5 +20,4 @@
         args="-resolution 0.05" />
       
       <!-- <node pkg="drone_essentials" name="init_tf_node" type="init_state.py" output="screen" /> -->
-
 </launch>
