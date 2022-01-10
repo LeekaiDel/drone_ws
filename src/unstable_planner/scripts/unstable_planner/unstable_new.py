@@ -226,7 +226,7 @@ def setup_marker(pose, free_flag):
     :return:
     """
     marker = Marker()
-    marker.header.frame_id = "/map"
+    marker.header.frame_id = "map"
     marker.header.stamp = rospy.get_rostime()
     marker.ns = "target_point"
     marker.id = 0

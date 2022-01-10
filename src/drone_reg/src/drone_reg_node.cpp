@@ -272,7 +272,7 @@ visualization_msgs::Marker setup_marker(drone_msgs::DronePose point) {
     // возвращает маркер в rviz
 
     visualization_msgs::Marker marker;
-    marker.header.frame_id = "/map";
+    marker.header.frame_id = "map";
     marker.header.stamp = ros::Time::now();
     marker.ns = "goal_test_reg";
     marker.id = 0;
