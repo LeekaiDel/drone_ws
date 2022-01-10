@@ -297,6 +297,20 @@ visualization_msgs::Marker setup_marker(drone_msgs::DronePose point) {
     return marker;
 }
 
+sensor_msgs::Imu setup_vector_twist(geometry_msgs::TwistStamped vector_twist) {
+    // отображает маркер скорости в rviz
+
+    sensor_msgs::Imu vector;
+    vector.header.frame_id = "base_link";
+    vector.header.stamp = ros::Time::now();
+ 
+    vector.linear_acceleration.x = vector_twist.twist.linear.x;
+    vector.linear_acceleration.y = vector_twist.twist.linear.y;
+    vector.linear_acceleration.z = vector_twist.twist.linear.z;
+
+    return vector;
+}
+
 void set_server_value() {
     /***/
 }
@@ -360,7 +374,7 @@ int main(int argc, char** argv) {
 
     ros::Rate loop_rate(30);
 
-    ros::Publisher vel_pub, pub_marker;
+    ros::Publisher vel_pub, pub_marker, pub_vector_twist;
     ros::Subscriber goalSub, navPosSub, navVelSub, stateSub, exStateSub, velFieldSub, altSonarSub;
 
     //инициализация сервера динамической реконцигурации
@@ -406,8 +420,7 @@ int main(int argc, char** argv) {
 
     vel_pub = n.advertise<geometry_msgs::TwistStamped> (mavros_root + "/setpoint_velocity/cmd_vel", queue_size);
     pub_marker = n.advertise<visualization_msgs::Marker> ("/marker_reg_point", queue_size);
-
-
+    pub_vector_twist = n.advertise<sensor_msgs::Imu> ("/reg_vector_twist", queue_size);
 
     geometry_msgs::TwistStamped ctr_msg;
 
@@ -433,7 +446,10 @@ int main(int argc, char** argv) {
         ctr_msg.twist.angular.z = control[3];
 
         if (pose_timer < pose_lost_time)
+        {
             vel_pub.publish(ctr_msg);
+            pub_vector_twist.publish(setup_vector_twist(ctr_msg));  
+        }
         else {
             if (print_timer > print_delay) {
                 //ROS_INFO("lost goal callback: %f %f %f %f", goal_timer, goal_timer, pose_timer, pose_timer);
