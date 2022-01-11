@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(cv_map_parser)
+project(astar_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,31 +8,17 @@ project(cv_map_parser)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
+  geometry_msgs
   rospy
+  sensor_msgs
+  visualization_msgs
+  drone_msgs
   nav_msgs
-  tf2_ros
 )
-
-catkin_package(
-  #  INCLUDE_DIRS include
-  #  LIBRARIES cv_map_parser
-  #  CATKIN_DEPENDS cartographer_ros roscpp rospy
-  #  DEPENDS system_lib
-  )
-  
-  include_directories(include)
-  find_package( OpenCV REQUIRED )                              
-  include_directories( ${OpenCV_INCLUDE_DIRS} )
-
-  include_directories(${catkin_INCLUDE_DIRS})
-  add_executable(cv_map_parser_node src/cv_map_parser.cpp)
-  target_link_libraries(cv_map_parser_node ${catkin_LIBRARIES} ${OpenCV_LIBS})
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -87,7 +73,7 @@ catkin_package(
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   geometry_msgs#   sensor_msgs
 # )
 
 ################################################
@@ -119,18 +105,27 @@ catkin_package(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES astar_planner
+#  CATKIN_DEPENDS geometry_msgs rospy sensor_msgs
+#  DEPENDS system_lib
+)
 
-# add_dependencies(cv_map_parser_node )
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   include/${PROJECT_NAME}/cv_map_parser.h
+#   src/${PROJECT_NAME}/astar_planner.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -141,6 +136,8 @@ catkin_package(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
+# add_executable(${PROJECT_NAME}_node src/astar_planner_node.cpp)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -203,7 +200,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_cv_map_parser.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_astar_planner.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

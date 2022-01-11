@@ -5,10 +5,10 @@ include "trajectory_builder.lua"
 options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
-  map_frame = "map_pseudo",
+  map_frame = "map",
   tracking_frame = "base_link",
-  published_frame = "base_link",
-  odom_frame = "odom",
+  published_frame = "base_link_odom",
+  odom_frame = "",
   provide_odom_frame = false,
   publish_frame_projected_to_2d = false,
   use_odometry = true,

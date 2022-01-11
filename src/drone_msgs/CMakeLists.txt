@@ -24,6 +24,7 @@ add_message_files(FILES
   DroneInfo.msg
   DroneInfoArray.msg
   Strike.msg
+  GlobalTrajectory.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

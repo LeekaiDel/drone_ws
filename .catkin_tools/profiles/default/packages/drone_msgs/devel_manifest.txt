@@ -5,6 +5,7 @@ drone_msgs
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/Diagnostics.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/Diagnostics.l
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/WindowPointDir.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/WindowPointDir.l
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/DronePose.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/DronePose.l
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/GlobalTrajectory.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/GlobalTrajectory.l
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/RoomParams.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/RoomParams.l
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/Goal.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/Goal.l
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/roseus/ros/drone_msgs/msg/DroneInfo.l /home/leekaidel/drone_ws/devel/share/roseus/ros/drone_msgs/msg/DroneInfo.l
@@ -14,6 +15,7 @@ drone_msgs
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/_index.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/_index.js
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/WindowPointDir.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/WindowPointDir.js
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/Diagnostics.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/Diagnostics.js
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/GlobalTrajectory.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/GlobalTrajectory.js
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/WindowAngleDir.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/WindowAngleDir.js
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/Goal.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/Goal.js
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/gennodejs/ros/drone_msgs/msg/_index.js /home/leekaidel/drone_ws/devel/share/gennodejs/ros/drone_msgs/msg/_index.js
@@ -39,9 +41,11 @@ drone_msgs
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_RoomParams.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_RoomParams.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/WindowPointDir.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/WindowPointDir.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_Strike.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_Strike.lisp
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/GlobalTrajectory.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/GlobalTrajectory.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_Diagnostics.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_Diagnostics.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/WindowAngleDir.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/WindowAngleDir.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/Goal.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/Goal.lisp
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_GlobalTrajectory.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_GlobalTrajectory.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/RoomParams.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/RoomParams.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_LocalPlannerState.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_LocalPlannerState.lisp
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/share/common-lisp/ros/drone_msgs/msg/_package_DroneInfoArray.lisp /home/leekaidel/drone_ws/devel/share/common-lisp/ros/drone_msgs/msg/_package_DroneInfoArray.lisp
@@ -56,12 +60,14 @@ drone_msgs
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/WindowAngleDir.h /home/leekaidel/drone_ws/devel/include/drone_msgs/WindowAngleDir.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/DronePose.h /home/leekaidel/drone_ws/devel/include/drone_msgs/DronePose.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/LocalPlannerState.h /home/leekaidel/drone_ws/devel/include/drone_msgs/LocalPlannerState.h
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/GlobalTrajectory.h /home/leekaidel/drone_ws/devel/include/drone_msgs/GlobalTrajectory.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/Strike.h /home/leekaidel/drone_ws/devel/include/drone_msgs/Strike.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/WindowPointDir.h /home/leekaidel/drone_ws/devel/include/drone_msgs/WindowPointDir.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/include/drone_msgs/Diagnostics.h /home/leekaidel/drone_ws/devel/include/drone_msgs/Diagnostics.h
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/__init__.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/__init__.py
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/_DronePose.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/_DronePose.py
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/_DroneInfoArray.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/_DroneInfoArray.py
+/home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/_GlobalTrajectory.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/_GlobalTrajectory.py
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/_RoomParams.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/_RoomParams.py
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/__init__.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/__init__.py
 /home/leekaidel/drone_ws/devel/.private/drone_msgs/lib/python3/dist-packages/drone_msgs/msg/_DroneInfo.py /home/leekaidel/drone_ws/devel/lib/python3/dist-packages/drone_msgs/msg/_DroneInfo.py

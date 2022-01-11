@@ -78,21 +78,19 @@ class AStarPlanner:
 
             c_id = min(
                 open_set,
-                key=lambda o: open_set[o].cost + self.calc_heuristic(goal_node,
-                                                                     open_set[
-                                                                         o]))
+                key=lambda o: open_set[o].cost + self.calc_heuristic(goal_node, open_set[o]))
             current = open_set[c_id]
 
             # show graph
-            if show_animation:  # pragma: no cover
-                plt.plot(self.calc_grid_position(current.x, self.min_x),
-                         self.calc_grid_position(current.y, self.min_y), "xc")
-                # for stopping simulation with the esc key.
-                plt.gcf().canvas.mpl_connect('key_release_event',
-                                             lambda event: [exit(
-                                                 0) if event.key == 'escape' else None])
-                if len(closed_set.keys()) % 10 == 0:
-                    plt.pause(0.001)
+            # if show_animation:  # pragma: no cover
+            #     plt.plot(self.calc_grid_position(current.x, self.min_x),
+            #              self.calc_grid_position(current.y, self.min_y), "xc")
+            #     # for stopping simulation with the esc key.
+            #     plt.gcf().canvas.mpl_connect('key_release_event',
+            #                                  lambda event: [exit(
+            #                                      0) if event.key == 'escape' else None])
+            #     if len(closed_set.keys()) % 10 == 0:
+            #         plt.pause(0.001)
 
             if current.x == goal_node.x and current.y == goal_node.y:
                 print("Find goal")
@@ -239,7 +237,7 @@ def main():
     gx = 50.0  # [m]
     gy = 50.0  # [m]
     grid_size = 2.0  # [m]
-    robot_radius = 1.0  # [m]
+    robot_radius = 3.0  # [m]
 
     # set obstacle positions
     ox, oy = [], []
