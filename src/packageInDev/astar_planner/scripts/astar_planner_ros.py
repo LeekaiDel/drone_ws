@@ -303,8 +303,8 @@ class GlobalPlanner():
         x = divmod(i, self.grid_map_.info.height)
         y = divmod(i, self.grid_map_.info.width)
 
-        x = x[0] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution
-        y = y[1] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution
+        x = x[0] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution/2.0
+        y = y[1] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution/2.0
   
         return x, y
         
