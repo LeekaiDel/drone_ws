@@ -7,6 +7,7 @@ from mavros_msgs.msg import State
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
 import math
 import threading
+import sys
 
 class TaskManager():
     def __init__(self):
@@ -14,7 +15,9 @@ class TaskManager():
 
         self.drone_is_takeoff = False   # Дрон взлетел?
         self.drone_is_land = False  # Дрон приземлился?
-        
+        self.allow_task_execution = False   # Разрешить выполнение задания
+        self.recive_traj = False    # Получена траектория?
+
         self.drone_state = State()
         self.curent_drone_pose = PoseStamped()
         self.curent_goal_traj = GlobalTrajectory()
@@ -28,19 +31,18 @@ class TaskManager():
         thread_input.start()
         thread_main = threading.Thread(target=self.main)
         thread_main.start()
-    
+
     def main(self):
         pass
     
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
         while True:
-            # self.display_statuses()
-            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t ")
+            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t ")
             command = input("Введите номер команды из перечня ->\t")
             if command == "exit":
-                exit()
-                
+                break
+
             elif command == "0":
                 print("Команда: Стоп\n")
                 goal = Goal()
@@ -64,15 +66,26 @@ class TaskManager():
                 print("Команда: Посадка\n")
                 self.set_land()
                 self.set_disarm()
-
+                self.drone_is_land = True
+            
+            elif command == "3":
+                print("Команда: Выполнить задание\n")
+                cmd = input("Введите 0 или 1 - соответственно Разрешить или Запретить ->\t")
+                if cmd == "0":
+                    self.allow_task_execution = False
+                    print("Выполнение задания ЗАПРЕЩЕНО")
+                elif cmd == "1":
+                    self.allow_task_execution = True
+                    print("Выполнение задания РАЗРЕШЕНО")
             else:
                 print("Не верная команда\n")
-
+        return        
+    
     # Устанавливаем OFFBOARD режим
     def set_offboard_mode(self):
-        rospy.wait_for_service('/mavros/set_mode')
+        rospy.wait_for_service('mavros/set_mode')
         try:
-            flightModeService = rospy.ServiceProxy('/mavros/set_mode', SetMode)
+            flightModeService = rospy.ServiceProxy('mavros/set_mode', SetMode)
             response = flightModeService(custom_mode='OFFBOARD')
             return response.mode_sent
         except rospy.ServiceException as e:
@@ -117,11 +130,14 @@ class TaskManager():
     # Получаем данные о текущем состоянии дрона
     def drone_state_cb(self, msg: State):
         self.drone_state = msg
-    
+        if msg.mode != State.MODE_PX4_LAND and msg.mode != State.MODE_PX4_LOITER and msg.mode != State.MODE_PX4_MANUAL:
+            self.drone_is_takeoff = True
+            self.drone_is_land = False
 
     # Получаем самую свежую траекторию
     def trajectory_cb(self, msg: GlobalTrajectory):
         self.curent_goal_traj = msg
+        self.recive_traj = True
 
 
 if __name__ == "__main__":
