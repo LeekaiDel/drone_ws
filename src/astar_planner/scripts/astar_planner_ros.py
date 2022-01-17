@@ -106,7 +106,7 @@ class AStarPlanner:
                         # This path is the best until now. record it
                         open_set[n_id] = node
 
-        rx, ry = self.calc_final_path(goal_node, closed_set)
+        ry, rx = self.calc_final_path(goal_node, closed_set)
 
         return rx, ry
 
@@ -228,13 +228,16 @@ class GlobalPlanner():
         self.start_pose_grid = ()
         self.goal_pose_grid = ()
 
+        self.radius_of_robot = 0.8 
+        self.filter_traj_threshold = 1.2
+
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
         rospy.Subscriber("/goal_point", PoseStamped, self.goal_pose_clb, queue_size=10)
 
-        self.send_trajectory_pub = rospy.Publisher("/trajectory", GlobalTrajectory,  queue_size=10)
-        self.marker_path_pub = rospy.Publisher("/global_path", Marker, queue_size=10)
-        self.marker_obs_pub = rospy.Publisher("/obstacles", MarkerArray, queue_size=10)
+        self.send_trajectory_pub = rospy.Publisher("/astar/trajectory", GlobalTrajectory,  queue_size=10)
+        self.marker_path_pub = rospy.Publisher("/astar/viz/global_path", Marker, queue_size=10)
+        self.marker_obs_pub = rospy.Publisher("/astar/viz/obstacles", MarkerArray, queue_size=10)
         
         while not rospy.is_shutdown():
             self.planner_loop()
@@ -307,8 +310,8 @@ class GlobalPlanner():
         return x, y
         
 
-    def display_path(self, x: list, y: list):
-        print("ok")
+    def display_path(self, trajectory: list):
+        # print("ok")
         marker_path = Marker()
         marker_path.id = 0
         marker_path.ns = "path"
@@ -321,15 +324,15 @@ class GlobalPlanner():
         marker_path.color.g = 0.0
         marker_path.color.r = 1.0
 
-        marker_path.scale.x = 0.1
-        marker_path.scale.y = 0.1
+        marker_path.scale.x = 0.05
+        marker_path.scale.y = 0.05
         marker_path.scale.z = 0.0
 
-        for i in range (len(x)):
+        for i in range (len(trajectory)):
             waypoint = Point()
             # waypoint.header.stamp = rospy.get_time()
-            waypoint.x = x[i]
-            waypoint.y = y[i]
+            waypoint.x = trajectory[i][0]
+            waypoint.y = trajectory[i][1]
             waypoint.z = 0.1
             marker_path.points.append(waypoint)
 
@@ -367,6 +370,138 @@ class GlobalPlanner():
         self.marker_obs_pub.publish(marker_arr)
     
 
+    def getAngleBetweenPoints(self, p1, p2):
+        angle = math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+        angle = angle * 180 / math.pi
+
+        if (angle < 0):
+            angle = angle + 2 * 180
+
+        return angle
+
+    # Вычисление расстояния между точками
+    def getDistanceBetweenPoints(self, p1, p2):
+        distance = math.sqrt( math.pow(p2[0]-p1[0], 2) + math.pow(p2[1]-p1[1], 2) )
+        return distance
+    # Определение расстояния от точки до отрезка (при различных положениях точки относительно отрезка)
+    # https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+    def getDistanceFromPointToLineSegment(self, p, p1, p2):
+        A = p[0] - p1[0]
+        B = p[1] - p1[1]
+        C = p2[0] - p1[0]
+        D = p2[1] - p1[1]
+
+        dot = A * C + B * D
+        len_sq = C * C + D * D
+        param = -1
+        if (len_sq != 0): # in case of 0 length line
+            param = dot / len_sq
+
+        xx = 0
+        yy = 0
+
+        # Рассматриваем только 3-ий вариант расположения точки относительно отрезка
+        if (param > 0) and (param < 1): # 3 случай
+            xx = p1[0] + param * C
+            yy = p1[1] + param * D
+
+        dx = p[0] - xx
+        dy = p[1] - yy
+
+        distance = math.sqrt(dx * dx + dy * dy)
+
+        if (param < 0) or (param > 1):           # 1 случай
+            distance = -1
+
+        return distance
+    
+    # Фильтр ступенек заданного размера
+    def filter_trajectory_by_saw(self, trajectory, saw_size):
+        start_pos_index = -1
+        while(True):
+            angle_joint_1 = -1
+            angle_joint_2 = -1
+            distance_joint_1 = -1
+            distance_joint_2 = -1
+
+            start_pos_index = start_pos_index + 1
+
+            if (start_pos_index + 1 <= len(trajectory) - 1):
+                angle_joint_1 = self.getAngleBetweenPoints(trajectory[start_pos_index],trajectory[start_pos_index + 1])
+                distance_joint_1 = self.getDistanceBetweenPoints(trajectory[start_pos_index],trajectory[start_pos_index + 1])
+
+            if (start_pos_index + 2 <= len(trajectory) - 1):
+                angle_joint_2 = self.getAngleBetweenPoints(trajectory[start_pos_index + 1], trajectory[start_pos_index + 2])
+                distance_joint_2 = self.getDistanceBetweenPoints(trajectory[start_pos_index + 1], trajectory[start_pos_index + 2])
+
+            # Пила под прямым углом
+            if (math.fabs(angle_joint_1 - angle_joint_2) == 90) and (distance_joint_1 == distance_joint_2): # Пила обнаружена
+                if (distance_joint_1 <= saw_size):
+                    del trajectory[start_pos_index + 1]
+                    start_pos_index = 0
+
+            # Пила под косым углом
+            if (start_pos_index + 1 <= len(trajectory) - 1) and (start_pos_index + 2 <= len(trajectory) - 1):
+                if (distance_joint_1 <= saw_size) and (distance_joint_2 <= saw_size) and (angle_joint_1 != angle_joint_2):
+                    saw_height = self.getDistanceFromPointToLineSegment(trajectory[start_pos_index + 1], trajectory[start_pos_index],trajectory[start_pos_index + 2])
+                    if (saw_height != -1):
+                        if (saw_height <= saw_size * 0.5):
+                            del trajectory[start_pos_index + 1]
+                            start_pos_index = 0
+
+            if (start_pos_index >= len(trajectory) - 1):
+                break
+
+        return trajectory
+
+    # Фильтр по углу между сочленениями
+    def filter_trajectory_by_angle(self, trajectory, angle, distance):
+        start_pos_index = 0
+
+        while(True):
+            angle_joint_1 = -1
+            angle_joint_2 = -1
+            distance_joint_1 = -1
+            distance_joint_2 = -1
+
+            if (start_pos_index + 1 <= len(trajectory) - 1):
+                angle_joint_1 = self.getAngleBetweenPoints(trajectory[start_pos_index], trajectory[start_pos_index + 1])
+                distance_joint_1 = self.getDistanceBetweenPoints(trajectory[start_pos_index], trajectory[start_pos_index + 1])
+
+            if (start_pos_index + 2 <= len(trajectory) - 1):
+                angle_joint_2 = self.getAngleBetweenPoints(trajectory[start_pos_index + 1], trajectory[start_pos_index + 2])
+                distance_joint_2 = self.getDistanceBetweenPoints(trajectory[start_pos_index + 1], trajectory[start_pos_index + 2])
+
+            if ((angle_joint_1 != -1) and (angle_joint_2 != -1)):
+                if (math.fabs(angle_joint_1 - angle_joint_2) == 0):
+                    del trajectory[start_pos_index + 1]
+                    start_pos_index = 0
+                elif (math.fabs(angle_joint_1 - angle_joint_2) <= angle) and (distance_joint_1 + distance_joint_2 <= distance):
+                    del trajectory[start_pos_index + 1]
+                    start_pos_index = 0
+                elif (math.fabs(angle_joint_1 - angle_joint_2) <= 15) and (distance_joint_1 <= 5 or distance_joint_2 <= 5):
+                    del trajectory[start_pos_index + 1]
+                    start_pos_index = 0
+                elif angle_joint_1 == 0 or angle_joint_2 == 0:
+                    if (angle_joint_1 == 0):
+                        angle_joint_1 = 360
+
+                    if (angle_joint_2 == 0):
+                        angle_joint_2 = 360
+
+                    if (math.fabs(angle_joint_1 - angle_joint_2) <= angle) and (distance_joint_1 + distance_joint_2 <= distance):
+                        del trajectory[start_pos_index + 1]
+                        start_pos_index = 0
+                    else:
+                        start_pos_index = start_pos_index + 1
+                else:
+                    start_pos_index = start_pos_index + 1
+            else:
+                break
+
+        return trajectory
+
+
     def planner_loop(self):
         
         if (self.robot_pose_ == None or self.grid_map_ == None or self.trajectory_sended == True):
@@ -380,33 +515,48 @@ class GlobalPlanner():
             x,y = self.get_coords_from_grid_index(i)
             obs_x.append(x)
             obs_y.append(y)
-            print(f"OBSTACLE {i} {[x, y]}")
+            # print(f"OBSTACLE {i} {[x, y]}")
         self.display_obs(obs_y, obs_x)
 
-        a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution, 0.7)
+        a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution,  self.radius_of_robot)
 
         # self.start_pose_grid = [0, 0]
         rx, ry = a_star.planning(self.robot_pose_.pose.position.y, self.robot_pose_.pose.position.x, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
-        self.display_path(ry, rx)
         
-        #self.infill_trajectory(ry, rx)
+        rx.reverse()
+        ry.reverse()
+
+        trajectory = list()
+        for i in range(len(rx)):
+            waypoint = list()
+            waypoint.append(rx[i])
+            waypoint.append(ry[i])
+            trajectory.append(waypoint)
+
+        # print("1: " + str(len(trajectory)))
+        trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
+        # trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.1)
+        # print("2: " + str(len(trajectory)))
+
+
+        self.display_path(trajectory)
+
+        self.trajectory.waypoints.clear()
+        for i in range(len(trajectory)):
+            waypoint = PoseStamped()
+            waypoint.pose.position.x = trajectory[i][0]
+            waypoint.pose.position.y = trajectory[i][1]
+
+            self.trajectory.waypoints.append(waypoint)
+        self.send_trajectory_pub.publish(self.trajectory)
+
 
         self.trajectory_sended = True
         self.old_goal_pose = self.goal_pose_
         
 
     # def infill_trajectory(self, x, y):
-    #     x.reverse()
-    #     y.reverse()
 
-    #     self.trajectory.mode = GlobalTrajectory.WITHOUT_PLANNERS
-    #     for i in range(len(x)):
-    #         waypoint = PoseStamped()
-    #         waypoint.pose.position.x = x[i]
-    #         waypoint.pose.position.y = y[i]
-
-    #         self.trajectory.waypoints.append(waypoint)
-    #     self.send_trajectory_pub.publish(self.trajectory)
 
 if __name__ == "__main__":
 
