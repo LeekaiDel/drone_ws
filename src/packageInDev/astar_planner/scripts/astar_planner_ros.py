@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from nav_msgs.msg import OccupancyGrid
@@ -210,12 +209,8 @@ class AStarPlanner:
         return motion
 
 
-
 class GlobalPlanner():
     def __init__(self):        
-        self.robot_id = 1
-        if self.robot_id == None : self.robot_id = 0
-
         self.trajectory_sended = True
 
         self.robot_pose_ = None
@@ -233,19 +228,17 @@ class GlobalPlanner():
         self.start_pose_grid = ()
         self.goal_pose_grid = ()
 
-        robot_topic_prefix = ""
-
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
-        rospy.Subscriber(robot_topic_prefix + "/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
-        rospy.Subscriber(robot_topic_prefix + "/end_goal_pose", PoseStamped, self.goal_pose_clb, queue_size=10)
+        rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
+        rospy.Subscriber("/goal_point", PoseStamped, self.goal_pose_clb, queue_size=10)
 
-        self.send_trajectory_pub = rospy.Publisher(robot_topic_prefix + "/trajectory", GlobalTrajectory,  queue_size=10)
-        # self.visualize_global_path = rospy.Publisher("/global_path", MarkerArray, queue_size=10)
+        self.send_trajectory_pub = rospy.Publisher("/trajectory", GlobalTrajectory,  queue_size=10)
         self.marker_path_pub = rospy.Publisher("/global_path", Marker, queue_size=10)
         self.marker_obs_pub = rospy.Publisher("/obstacles", MarkerArray, queue_size=10)
         
         while not rospy.is_shutdown():
             self.planner_loop()
+
 
     def map_clb(self, msg: OccupancyGrid):
         """
@@ -258,6 +251,7 @@ class GlobalPlanner():
         """
         self.robot_pose_ = msg
     
+
     def goal_pose_clb(self, msg: PoseStamped):
         """
         """
@@ -275,6 +269,7 @@ class GlobalPlanner():
                 if obj_exist == False:
                     self.obstacle_map.append(i)
 
+
     def world_to_map(self, x:int, y:int):
         """
         Get map coordinates
@@ -283,12 +278,14 @@ class GlobalPlanner():
         my = int((y - self.grid_map_.info.origin.position.y) / self.grid_map_.info.resolution)
         return [mx, my]
     
+
     def get_index(self, x:int, y:int):
         """
         Get index in map
         """
         return x + y * self.grid_map_.info.width
     
+
     def get_index_in_map_from_world_coords(self, x, y):
         """
         Returns index of point in world map to occupancy_grid
@@ -296,6 +293,7 @@ class GlobalPlanner():
         xm, ym = self.world_to_map(x, y)
         return self.get_index(xm, ym)
     
+
     def get_coords_from_grid_index(self, i):
         """
         Get coords using index in 1D occupancy grid 
@@ -303,37 +301,10 @@ class GlobalPlanner():
         x = divmod(i, self.grid_map_.info.height)
         y = divmod(i, self.grid_map_.info.width)
 
-        x = x[0] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution/2.0
-        y = y[1] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution/2.0
+        x = x[0] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution / 2.0
+        y = y[1] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution / 2.0
   
         return x, y
-        
-
-    def planner_loop(self):
-        
-        if (self.robot_pose_ == None or self.grid_map_ == None or self.trajectory_sended == True):
-            return
-
-        obs_x = []
-        obs_y = []
-
-        self.get_obstacle_map()
-        for i in self.obstacle_map:
-            x,y = self.get_coords_from_grid_index(i)
-            obs_x.append(x)
-            obs_y.append(y)
-            print(f"OBSTACLE {i} {[x, y]}")
-        self.display_obs(obs_y, obs_x)
-
-        a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution, 0.7)
-
-        # self.start_pose_grid = [0, 0]
-        rx, ry = a_star.planning(self.robot_pose_.pose.position.y, self.robot_pose_.pose.position.x, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
-        self.display_path(ry, rx)
-        
-        self.infill_trajectory(ry, rx)
-        self.trajectory_sended = True
-        self.old_goal_pose = self.goal_pose_
         
 
     def display_path(self, x: list, y: list):
@@ -363,7 +334,7 @@ class GlobalPlanner():
             marker_path.points.append(waypoint)
 
         self.marker_path_pub.publish(marker_path)
-        # self.trajectory = GlobalTrajectory()
+
 
     def display_obs(self, x:list, y:list):
         # print("OBS! " + str(len(x)))
@@ -395,18 +366,47 @@ class GlobalPlanner():
             marker_arr.markers.append(waypoint)
         self.marker_obs_pub.publish(marker_arr)
     
-    def infill_trajectory(self, x, y):
-        x.reverse()
-        y.reverse()
 
-        self.trajectory.mode = GlobalTrajectory.WITHOUT_PLANNERS
-        for i in range(len(x)):
-            waypoint = PoseStamped()
-            waypoint.pose.position.x = x[i]
-            waypoint.pose.position.y = y[i]
+    def planner_loop(self):
+        
+        if (self.robot_pose_ == None or self.grid_map_ == None or self.trajectory_sended == True):
+            return
 
-            self.trajectory.waypoints.append(waypoint)
-        self.send_trajectory_pub.publish(self.trajectory)
+        obs_x = []
+        obs_y = []
+
+        self.get_obstacle_map()
+        for i in self.obstacle_map:
+            x,y = self.get_coords_from_grid_index(i)
+            obs_x.append(x)
+            obs_y.append(y)
+            print(f"OBSTACLE {i} {[x, y]}")
+        self.display_obs(obs_y, obs_x)
+
+        a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution, 0.7)
+
+        # self.start_pose_grid = [0, 0]
+        rx, ry = a_star.planning(self.robot_pose_.pose.position.y, self.robot_pose_.pose.position.x, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
+        self.display_path(ry, rx)
+        
+        #self.infill_trajectory(ry, rx)
+
+        self.trajectory_sended = True
+        self.old_goal_pose = self.goal_pose_
+        
+
+    # def infill_trajectory(self, x, y):
+    #     x.reverse()
+    #     y.reverse()
+
+    #     self.trajectory.mode = GlobalTrajectory.WITHOUT_PLANNERS
+    #     for i in range(len(x)):
+    #         waypoint = PoseStamped()
+    #         waypoint.pose.position.x = x[i]
+    #         waypoint.pose.position.y = y[i]
+
+    #         self.trajectory.waypoints.append(waypoint)
+    #     self.send_trajectory_pub.publish(self.trajectory)
 
 if __name__ == "__main__":
 
