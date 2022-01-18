@@ -3,7 +3,7 @@ import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import PoseStamped, Pose, Point
 from drone_msgs.msg import GlobalTrajectory, Goal, DronePose
-from mavros_msgs.msg import State 
+from mavros_msgs.msg import State, ExtendedState
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
 import math
 import threading
@@ -18,23 +18,38 @@ class TaskManager():
         self.allow_task_execution = False   # Разрешить выполнение задания
         self.recive_traj = False    # Получена траектория?
 
-        self.drone_state = State()
+        self.drone_state = ExtendedState()
         self.curent_drone_pose = PoseStamped()
         self.curent_goal_traj = GlobalTrajectory()
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.drone_pose_cb, queue_size=10)
         rospy.Subscriber("/astar/trajectory", GlobalTrajectory, self.trajectory_cb, queue_size=10)
-        rospy.Subscriber("/mavros/state", State, self.drone_state_cb, queue_size=10)
+        rospy.Subscriber("/mavros/extended_state", ExtendedState, self.drone_state_cb, queue_size=10)
         
         self.goal_pub = rospy.Publisher("/goal_pose", Goal, queue_size=10)
         
-        thread_input = threading.Thread(target=self.task_menu_cb)
+        thread_input = threading.Thread(target=self.task_menu_cb, daemon=True)
         thread_input.start()
-        thread_main = threading.Thread(target=self.main)
+        thread_main = threading.Thread(target=self.main, daemon=True)
         thread_main.start()
 
+    # Функция проверяет наличие нового задания и передает траекторию на регулятор
     def main(self):
-        pass
-    
+        while True:
+            if self.recive_traj == True:
+                last_waypoint = PoseStamped()
+                print("\nВыполнение задания...")
+                for waypoint in self.curent_goal_traj.waypoints:
+                    while round(math.sqrt((self.curent_drone_pose.pose.position.x - waypoint.pose.position.x)**2 + (self.curent_drone_pose.pose.position.y - waypoint.pose.position.y)**2), 1) > 0.5:
+                        goal = Goal()
+                        goal.pose.point.x = waypoint.pose.position.x
+                        goal.pose.point.y = waypoint.pose.position.y
+                        goal.pose.point.z = self.height_of_takeoff
+                        if self.allow_task_execution:
+                            self.goal_pub.publish(goal)
+                self.recive_traj = False
+                self.curent_goal_traj = GlobalTrajectory()
+                print("Задание выполнено")
+
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
         while True:
@@ -45,6 +60,7 @@ class TaskManager():
 
             elif command == "0":
                 print("Команда: Стоп\n")
+                self.allow_task_execution = False
                 goal = Goal()
                 goal.pose.point = self.curent_drone_pose.pose.position
                 self.goal_pub.publish(goal)
@@ -52,25 +68,25 @@ class TaskManager():
             elif command == "1":
                 print("Команда: Взлет\n")
                 heigt = float(input("Введите высоту, на которую нужно взлететь ->\t"))
+                
                 self.height_of_takeoff = heigt
-                self.set_arm()
-                self.set_offboard_mode()
+                if self.drone_is_land:
+                    self.set_arm()
+                    self.set_offboard_mode()
                 goal = Goal()
                 goal.pose.point.x = self.curent_drone_pose.pose.position.x
                 goal.pose.point.y = self.curent_drone_pose.pose.position.y
                 goal.pose.point.z = self.height_of_takeoff
                 self.goal_pub.publish(goal)
-                self.drone_is_takeoff = True
 
             elif command == "2":
                 print("Команда: Посадка\n")
                 self.set_land()
-                self.set_disarm()
                 self.drone_is_land = True
             
             elif command == "3":
                 print("Команда: Выполнить задание\n")
-                cmd = input("Введите 0 или 1 - соответственно Разрешить или Запретить ->\t")
+                cmd = input("Введите 0 или 1 - соответственно Запретить или Разрешить ->\t")
                 if cmd == "0":
                     self.allow_task_execution = False
                     print("Выполнение задания ЗАПРЕЩЕНО")
@@ -79,7 +95,6 @@ class TaskManager():
                     print("Выполнение задания РАЗРЕШЕНО")
             else:
                 print("Не верная команда\n")
-        return        
     
     # Устанавливаем OFFBOARD режим
     def set_offboard_mode(self):
@@ -112,7 +127,7 @@ class TaskManager():
         except rospy.ServiceException as e:
             print("Ошибка отключения моторов!")
 
-    # Произвотим посадку в текущей позиции
+    # Производим посадку в текущей позиции
     def set_land(self):
         rospy.wait_for_service('mavros/cmd/land')
         try:
@@ -128,16 +143,21 @@ class TaskManager():
         self.curent_drone_pose = msg
     
     # Получаем данные о текущем состоянии дрона
-    def drone_state_cb(self, msg: State):
+    def drone_state_cb(self, msg: ExtendedState):
         self.drone_state = msg
-        if msg.mode != State.MODE_PX4_LAND and msg.mode != State.MODE_PX4_LOITER and msg.mode != State.MODE_PX4_MANUAL:
+        if msg.landed_state == ExtendedState.LANDED_STATE_IN_AIR:
             self.drone_is_takeoff = True
             self.drone_is_land = False
+        elif msg.landed_state == ExtendedState.LANDED_STATE_ON_GROUND:
+            self.drone_is_takeoff = False
+            self.drone_is_land = True
+
 
     # Получаем самую свежую траекторию
     def trajectory_cb(self, msg: GlobalTrajectory):
-        self.curent_goal_traj = msg
-        self.recive_traj = True
+        if self.recive_traj == False:
+            self.curent_goal_traj = msg
+            self.recive_traj = True
 
 
 if __name__ == "__main__":
