@@ -152,7 +152,6 @@ class TaskManager():
             self.drone_is_takeoff = False
             self.drone_is_land = True
 
-
     # Получаем самую свежую траекторию
     def trajectory_cb(self, msg: GlobalTrajectory):
         if self.recive_traj == False:
