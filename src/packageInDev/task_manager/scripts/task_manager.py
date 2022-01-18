@@ -37,7 +37,7 @@ class TaskManager():
         while True:
             if self.recive_traj == True:
                 last_waypoint = PoseStamped()
-                print("\nВыполнение задания...")
+                # print("\nВыполнение задания...")
                 for waypoint in self.curent_goal_traj.waypoints:
                     while round(math.sqrt((self.curent_drone_pose.pose.position.x - waypoint.pose.position.x)**2 + (self.curent_drone_pose.pose.position.y - waypoint.pose.position.y)**2), 1) > 0.5:
                         goal = Goal()
@@ -48,7 +48,7 @@ class TaskManager():
                             self.goal_pub.publish(goal)
                 self.recive_traj = False
                 self.curent_goal_traj = GlobalTrajectory()
-                print("Задание выполнено")
+                print("\nЗадание выполнено")
 
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):

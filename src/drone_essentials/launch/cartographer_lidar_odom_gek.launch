@@ -10,7 +10,7 @@
         output="screen">
       <!--remap from="scan" to="/scan" /-->
             <remap from="odom" to="/mavros/local_position/odom" />
-            <remap from="/imu" to="/mavros/imu/data"/>
+            <!-- <remap from="/imu" to="/mavros/imu/data"/> -->
       <!--remap from="points2" to="/camera/depth/points" / -->
       </node>
 

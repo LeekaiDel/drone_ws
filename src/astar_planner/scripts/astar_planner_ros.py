@@ -217,7 +217,7 @@ class GlobalPlanner():
         self.goal_pose_  = PoseStamped()
         self.trajectory = GlobalTrajectory()
 
-        self.grid_map_ = None
+        self.grid_map_ = OccupancyGrid()
         self.old_map = OccupancyGrid()
         self.obstacle_map = list()
 
@@ -266,6 +266,7 @@ class GlobalPlanner():
     def get_obstacle_map(self):
         """
         """
+        self.obstacle_map.clear()
         for i in range(len(self.grid_map_.data)):
             if self.grid_map_.data[i] > 50:
                 obj_exist = i in self.obstacle_map
@@ -534,7 +535,7 @@ class GlobalPlanner():
             trajectory.append(waypoint)
 
         # print("1: " + str(len(trajectory)))
-        trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
+        # trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
         # trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.1)
         # print("2: " + str(len(trajectory)))
 
