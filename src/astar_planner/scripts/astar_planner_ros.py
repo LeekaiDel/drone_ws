@@ -8,7 +8,7 @@ import math
 
 class AStarPlanner:
 
-    def __init__(self, ox, oy, resolution, rr):
+    def __init__(self, oy, ox, resolution, rr):
         """
         Initialize grid map for a star planning
         ox: x position list of Obstacles [m]
@@ -228,7 +228,7 @@ class GlobalPlanner():
         self.start_pose_grid = ()
         self.goal_pose_grid = ()
 
-        self.radius_of_robot = 0.8 
+        self.radius_of_robot = 0.8
         self.filter_traj_threshold = 1.2
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
@@ -302,11 +302,14 @@ class GlobalPlanner():
         """
         Get coords using index in 1D occupancy grid 
         """
-        x = divmod(i, self.grid_map_.info.height)
-        y = divmod(i, self.grid_map_.info.width)
-
-        x = x[0] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution / 2.0
-        y = y[1] * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution / 2.0
+        y = divmod(i, self.grid_map_.info.width)[0]
+        x = i - y * self.grid_map_.info.width
+        
+        # print(self.grid_map_.info)
+        # print(y)
+        
+        x = x * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.x + self.grid_map_.info.resolution / 2.0
+        y = y * self.grid_map_.info.resolution + self.grid_map_.info.origin.position.y + self.grid_map_.info.resolution / 2.0
   
         return x, y
         
@@ -513,16 +516,16 @@ class GlobalPlanner():
 
         self.get_obstacle_map()
         for i in self.obstacle_map:
-            x,y = self.get_coords_from_grid_index(i)
+            x, y = self.get_coords_from_grid_index(i)
             obs_x.append(x)
             obs_y.append(y)
             # print(f"OBSTACLE {i} {[x, y]}")
-        self.display_obs(obs_y, obs_x)
+        self.display_obs(obs_x, obs_y)
 
         a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution,  self.radius_of_robot)
 
         # self.start_pose_grid = [0, 0]
-        rx, ry = a_star.planning(self.robot_pose_.pose.position.y, self.robot_pose_.pose.position.x, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
+        rx, ry = a_star.planning(self.robot_pose_.pose.position.x, self.robot_pose_.pose.position.y, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
         
         rx.reverse()
         ry.reverse()

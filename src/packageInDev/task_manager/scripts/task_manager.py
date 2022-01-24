@@ -53,7 +53,7 @@ class TaskManager():
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
         while True:
-            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t ")
+            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t4. Выключить моторы\n\t")
             command = input("Введите номер команды из перечня ->\t")
             if command == "exit":
                 break
@@ -93,6 +93,11 @@ class TaskManager():
                 elif cmd == "1":
                     self.allow_task_execution = True
                     print("Выполнение задания РАЗРЕШЕНО")
+
+            elif command == "4":
+                print("Команда: Выключить моторы\n")
+                self.set_disarm()
+
             else:
                 print("Не верная команда\n")
     
