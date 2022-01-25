@@ -106,7 +106,10 @@ class AStarPlanner:
                         # This path is the best until now. record it
                         open_set[n_id] = node
 
-        ry, rx = self.calc_final_path(goal_node, closed_set)
+        if len(open_set) == 0:
+            return None, None
+        else:
+            ry, rx = self.calc_final_path(goal_node, closed_set)
 
         return rx, ry
 
@@ -525,8 +528,13 @@ class GlobalPlanner():
         a_star = AStarPlanner(obs_x, obs_y, self.grid_map_.info.resolution,  self.radius_of_robot)
 
         # self.start_pose_grid = [0, 0]
-        rx, ry = a_star.planning(self.robot_pose_.pose.position.x, self.robot_pose_.pose.position.y, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
+        rx, ry = a_star.planning(self.robot_pose_.pose.position.y, self.robot_pose_.pose.position.x, self.goal_pose_.pose.position.y, self.goal_pose_.pose.position.x)
         
+        if rx is None and ry is None:
+            self.trajectory_sended = True
+            print("Fail!")
+            return
+
         rx.reverse()
         ry.reverse()
 
