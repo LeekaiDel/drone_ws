@@ -68,7 +68,6 @@ class TaskManager():
             elif command == "1":
                 print("Команда: Взлет\n")
                 heigt = float(input("Введите высоту, на которую нужно взлететь ->\t"))
-                
                 self.height_of_takeoff = heigt
                 if self.drone_is_land:
                     self.set_arm()
