@@ -1,29 +1,9 @@
 <launch>
     <!-- laod prams from environment variables -->
     <arg name="frame_id" default="drone"/>
-    <param name="robot_description" textfile="$(find drone_bringup)/configuration_files/fixed_joint.urdf" />
-
-
-	<!--Init state of the drone-->
-	<node pkg="drone_bringup" name="init_tf_node" type="init_state.py" output="screen" />
-
-	<!-- fixed_joint-->
-	<node pkg="robot_state_publisher" name="drone_fixed_joints_pub" type="robot_state_publisher" output="screen">
-		<param name="publish_frequency" value="50.0"/>
-	</node>
-
-	<!--read distance data from ground lidar-->
-    <!--
-	<node pkg="drone_bringup" name="altitude_filter_node" type="ground_lidar_seek_ros.py" respawn="true" output="screen">
-	  <param name="port" value="/dev/lidar"/>
-	</node>
-    -->
+    <param name="robot_description" textfile="$(find drone_essentials)/urdf/iris_model.xacro" />
     
-	<!--Added tf relative height from ground lidar-->
-	<node pkg="drone_bringup" name="msg_to_tf_node" type="msg_to_tf2.py" respawn="true" output="screen" />
-
-
-	<!-- run PX4 mavros run -->
+    <!-- run PX4 mavros run -->
 	<include file="$(find mavros_link)/launch/px4_slam.launch">
 		<arg name="tgt_system" default="$(env DRONE_ID)"/>
 		<arg name="tgt_component" default="$(env DRONE_ID)" />
@@ -32,13 +12,23 @@
 		<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)" />
 	</include>
 
-	<!-- run Safemode server -->
-	<node pkg="drone_bringup" name="drone_safery" type="drone_safe_node.py" 	respawn="true" output="screen">
-		<param name="max_angle" value="$(env DRONE_SAFE_MAX_ANGLE)"/>
-		<param name="disarm_delay" value="$(env DRONE_SAFE_DISARM_DELAY)"/>
+	<!-- rp_lidar-->
+    <!-- <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+        <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+        <param name="serial_baudrate" type="int" value="256000"/>
+        <param name="frame_id" type="string" value="laser"/>
+        <param name="inverted" type="bool" value="false"/>
+        <param name="angle_compensate" type="bool" value="true"/>
+    </node> -->
+
+    <!-- fixed_joint-->
+	<node pkg="robot_state_publisher" name="drone_fixed_joints_pub" type="robot_state_publisher" output="screen">
+		<param name="publish_frequency" value="50.0"/>
 	</node>
 
-	<!-- run PX4 rplidar -->
-	<include file="$(find rplidar_ros)/launch/rplidar_s1.launch"/>
+    <!-- launch tf_broadcaster -->
+    <!-- <node pkg="robot_setup_tf" name="tf_broadcaster" type="tf_broadcaster"/> -->
 
+    <!-- run reg -->
+    <include file="$(find drone_essentials)/launch/reg.launch"/>
 </launch>
