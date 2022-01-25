@@ -13,13 +13,13 @@
 	</include>
 
 	<!-- rp_lidar-->
-    <!-- <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
         <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
         <param name="serial_baudrate" type="int" value="256000"/>
         <param name="frame_id" type="string" value="laser"/>
         <param name="inverted" type="bool" value="false"/>
         <param name="angle_compensate" type="bool" value="true"/>
-    </node> -->
+    </node>
 
     <!-- fixed_joint-->
 	<node pkg="robot_state_publisher" name="drone_fixed_joints_pub" type="robot_state_publisher" output="screen">
@@ -30,5 +30,5 @@
     <!-- <node pkg="robot_setup_tf" name="tf_broadcaster" type="tf_broadcaster"/> -->
 
     <!-- run reg -->
-    <!-- <include file="$(find drone_essentials)/launch/reg.launch"/> -->
+    <include file="$(find drone_essentials)/launch/reg.launch"/>
 </launch>
