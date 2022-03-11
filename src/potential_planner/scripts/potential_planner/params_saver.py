@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf8
 
 import yaml
@@ -15,7 +15,7 @@ class YamlParams():
     #   Открываем файл параметров
     def params_open(self):
         if os.path.exists(self.path):
-            pid_file = open(self.path, "rw")
+            pid_file = open(self.path, "r+")
             self.params = yaml.load(pid_file)
             # print("pid params file is opened")
         else:

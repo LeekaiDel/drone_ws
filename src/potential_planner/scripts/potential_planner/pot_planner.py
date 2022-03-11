@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf8
 
 import rospy
@@ -28,8 +28,8 @@ angle_vec = 0.0                 # Угол на который поворачи�
 # True - point_cloud2
 # False - lidar
 input_point2 = False
-use_drone_list = True
-use_one_point = True
+use_drone_list = False
+use_one_point = False
 
 # Инициализация глобальных переменных
 sonar_data = list()
@@ -90,7 +90,7 @@ def cfg_callback(config, level):
     if init_server:
         # opening pid params file
         pps.params_open()
-        print ("open from cfg callback")
+        # print("open from cfg callback")
 
         # setting values
         pps.params_set('r_field', config["r_field"])
@@ -100,7 +100,7 @@ def cfg_callback(config, level):
 
         # saving to file
         pps.params_save()
-        print ("save from cfg callback")
+        # print ("save from cfg callback")
 
         active_flag = config["run"]
 
@@ -112,7 +112,7 @@ def set_server_value(cfg_srv):
     global init_server, pps
 
     pps.params_open()
-    print ("open from set server value")
+    # print ("open from set server value")
 
     r_field = pps.params_get('r_field')
     c_rep = pps.params_get('c_rep')
@@ -262,12 +262,12 @@ def collbackDroneList(data):
     for i in data.drones:
         # Не учитываем собственное положение
         if i.id_drone == drone_id:
-            print "i.id_drone == drone_id"
+            # print("i.id_drone == drone_id")
             continue
         point = [i.pose.point.x,i.pose.point.y,i.pose.point.z]
         point_list.append(point)
 
-    print("Get list of drones: %s" %(len(point_list)))
+    # print("Get list of drones: %s" %(len(point_list)))
 
 
 def set_active_srv(req):
@@ -276,7 +276,7 @@ def set_active_srv(req):
     """
     global active_flag, cfg_srv
     active_flag = req.data
-    print("Change state:", active_flag)
+    # print("Change state:", active_flag)
     resp = SetBoolResponse()
     resp.success = True
 
@@ -319,7 +319,7 @@ if __name__ == '__main__':
     use_geo_mode = rospy.get_param('~use_geo_mode', use_geo_mode)
     drone_id = rospy.get_param('~drone_id', drone_id)
 
-    print("yaml_path:", yaml_path)
+    # print("yaml_path:", yaml_path)
     pps = YamlParams(yaml_path)
 
     # init dynamic reconfigure server
@@ -425,7 +425,7 @@ if __name__ == '__main__':
                     vec_i = get_vector_point2(current_pose, i)
                 else:
                     vec_i = get_vector_lidar(i)
-                print(vec_i)
+                # print(vec_i)
 
                 # Вычисляем длину вектора (расстояние до точки)
                 mod_vec = np.linalg.norm(vec_i)
