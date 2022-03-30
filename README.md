@@ -15,5 +15,5 @@ it's essential ws for using mavros and PX4 with my custom pckgs
 
 # Описание пакетов:
 * [drone_essentials](src/drone_essentials): основной пакет для запуска всех необходимых для работы узлов
-launchers:
-bringup_gps_sim.launch: подключает позиционный регулятор и устанавливает tf дерево через robot_state_publisher
+<br>launchers:
+<br>bringup_gps_sim.launch: подключает позиционный регулятор и устанавливает tf дерево через robot_state_publisher
