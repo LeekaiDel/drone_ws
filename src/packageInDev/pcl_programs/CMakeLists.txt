@@ -13,7 +13,7 @@ find_package(PCL 1.3 REQUIRED COMPONENTS common io)
 find_package(Eigen3 REQUIRED)
 
 catkin_package(
- INCLUDE_DIRS include
+#  INCLUDE_DIRS include
  LIBRARIES pcl_frame_detector
  CATKIN_DEPENDS pcl roscpp
  DEPENDS system_lib
