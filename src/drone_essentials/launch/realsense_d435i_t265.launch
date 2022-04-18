@@ -31,20 +31,23 @@
     </include>
   </group>
 
-  <group ns="$(arg camera2)">
-    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
-      <arg name="device_type"           value="$(arg device_type_camera2)"/>
-      <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
-      <arg name="tf_prefix"		          value="$(arg tf_prefix_camera2)"/>
-      <arg name="initial_reset"         value="$(arg initial_reset)"/>
-      <arg name="align_depth"           value="true"/>
-      <arg name="filters"               value="pointcloud"/>
-      <arg name="color_width"           value="$(arg color_width)"/>
-      <arg name="color_height"          value="$(arg color_height)"/>
-      <arg name="depth_width"           value="$(arg depth_width)"/>
-      <arg name="depth_height"          value="$(arg depth_height)"/>
-      <arg name="clip_distance"         value="$(arg clip_distance)"/>
-    </include>
+  <group if="$(env USE_D435)">
+    <group ns="$(arg camera2)">
+      <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+        <arg name="device_type"           value="$(arg device_type_camera2)"/>
+        <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
+        <arg name="tf_prefix"		          value="$(arg tf_prefix_camera2)"/>
+        <arg name="initial_reset"         value="$(arg initial_reset)"/>
+        <arg name="align_depth"           value="true"/>
+        <arg name="filters"               value="pointcloud"/>
+        <arg name="color_width"           value="$(arg color_width)"/>
+        <arg name="color_height"          value="$(arg color_height)"/>
+        <arg name="depth_width"           value="$(arg depth_width)"/>
+        <arg name="depth_height"          value="$(arg depth_height)"/>
+        <arg name="clip_distance"         value="$(arg clip_distance)"/>
+      </include>
+    </group>
   </group>
+
   <node pkg="tf" type="static_transform_publisher" name="t265_to_d400" args="0 0 0 0 0 0 /$(arg tf_prefix_camera1)_link /$(arg tf_prefix_camera2)_link 100"/>
 </launch>

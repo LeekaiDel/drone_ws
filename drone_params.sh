@@ -12,8 +12,7 @@ export MAVROS_FCU_PORT=14101
 
 export DRONE_REG_USE_POTENTIAL_PLANNER=False    # Использовать потенциальные поля?
 export DRONE_REG_USE_UNSTABLE_PLANNER=False     # Использовать неустойчивый планировщик?
-
-#export USE_POSE_REG=True                        #
+export USE_D435=False                           # Использовать камеру d435?
 
 export DRONE_REG_USE_GEO_MODE=False  #
 
