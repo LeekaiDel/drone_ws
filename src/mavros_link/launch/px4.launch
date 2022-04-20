@@ -3,11 +3,13 @@
 	<arg name="gcs_url"  default=""/>
 	<arg name="tgt_system"  default=""/>
 	<arg name="tgt_component"  default=""/>
-    <arg name="config_yaml" default="~/drone_ws/src/mavros/params/px4_config.yaml"/>
-    <arg name="pluginlists_yaml" default="~/drone_ws/src/mavros/params/px4_pluginlists.yaml"/>
+    <arg name="config_yaml" default=""/>
+    <arg name="pluginlists_yaml" default=""/>
 	<arg name="log_output" default="log" />
 	<arg name="fcu_protocol" default="v2.0" />
 	<arg name="respawn_mavros" default="false" />
+<!--~/drone_ws/src/mavros/params/px4_config.yaml-->
+<!--~/drone_ws/src/mavros/params/px4_pluginlists.yaml-->
 
 	<node pkg="mavros" exec="mavros_node">
 		<param name="fcu_url" value="$(var fcu_url)" />
