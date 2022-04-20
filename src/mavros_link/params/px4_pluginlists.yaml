@@ -1,4 +1,4 @@
 /**:    
   ros__parameters:  
-    plugin_denylist: [cam_imu_sync,camera,companion_process_status,debug_value,esc_status,esc_telemetry,fake_gps,ftp,gps_input,gps_rtk,gps_status,hil,landing_target,log_transfer,mag_calibration_status,manual_control,mocap_pose_estimate,mount_control,nav_controller_output,obstacle_distance,odometry,onboard_computer_status,play_tune,px,rangefinder,setpoint_accel,setpoint_attitude,setpoint_position,setpoint_trajectory,setpoint_velocity,tdr_radio,trajectory,tunnel,vibration,vision_pose,vision_speed,wheel_odomotry]
+    plugin_allowlist: [cam_imu_sync,camera,companion_process_status,debug_value,esc_status,esc_telemetry,fake_gps,ftp,gps_input,gps_rtk,gps_status,hil,landing_target,log_transfer,mag_calibration_status,manual_control,mocap_pose_estimate,mount_control,nav_controller_output,obstacle_distance,odometry,onboard_computer_status,play_tune,px,rangefinder,setpoint_accel,setpoint_attitude,setpoint_position,setpoint_trajectory,setpoint_velocity,tdr_radio,trajectory,tunnel,vibration,vision_pose,vision_speed,wheel_odomotry]
     # plugin_allowlist: []
