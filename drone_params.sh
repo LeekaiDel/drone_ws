@@ -16,6 +16,8 @@ export DRONE_REG_USE_UNSTABLE_PLANNER=False     # Использовать не�
 export DRONE_REG_USE_GEO_MODE=False             # Использовать расчет позиции в нодах из координат GPS?          
 export USE_D435=False                           # Использовать камеру d435?
 
+export ROS_DOMAIN_ID=137
+
 # Настройки для rosmaster 
 #export ROS_MASTER_URI=http://localhost:11311/
 #export ROS_IP=localhost
