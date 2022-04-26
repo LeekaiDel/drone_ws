@@ -7,17 +7,16 @@
 
 import rclpy
 from rclpy.node import Node
-from socket import *
 import time
 import serial
 from mavros_msgs.msg import RTCM
 
 
-class EmlidCorrectionTranslator(Node):
+class EmlidRtkTranslator(Node):
     def __init__(self):
-        super().__init__("emlid_correction_translator_node")
+        super().__init__("emlid_rtk_translator_node")
 
-        self.port = "/dev/ttyACM1"
+        self.port = "/dev/ttyACM0"
         self.baud = 115200
 
         self.correction_msg = RTCM()
@@ -54,6 +53,7 @@ class EmlidCorrectionTranslator(Node):
             if out is not None:
                 print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
                 self.correction_msg.header.stamp = self.get_clock().now().to_msg()
+                self.correction_msg.header.frame_id = 'reach'
                 self.correction_msg.data = out
                 print(self.correction_msg)
                 self.correction_pub.publish(self.correction_msg)
@@ -61,9 +61,13 @@ class EmlidCorrectionTranslator(Node):
         #     print("ERROR: close serial")
 
 
-if __name__ == '__main__':
-    rclpy.init()
-    emlid_correction_translator = EmlidCorrectionTranslator()
-    rclpy.spin(emlid_correction_translator)
-    emlid_correction_translator.destroy_node()
+def main(args=None):
+    rclpy.init(args=args)
+    emlid_rtk_translator = EmlidRtkTranslator()
+    rclpy.spin(emlid_rtk_translator)
+    emlid_rtk_translator.destroy_node()
     rclpy.shutdown()
+
+
+if __name__ == '__main__':
+   main()
