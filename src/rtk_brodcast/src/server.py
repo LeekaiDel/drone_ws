@@ -4,42 +4,66 @@
 1. UART
 """
 
+
+import rclpy
+# from rclpy import Node
 from socket import *
 import time
 import serial
 from mavros_msgs.msg import RTCM
 
-port = "/dev/ttyACM0"
-baud = 115200
+
+class EmlidCorrectionTranslator(rclpy.Node):
+    def __init__(self):
+        super().__init__("emlid_correction_translator_node")
+
+        self.port = "/dev/ttyACM1"
+        self.baud = 115200
+
+        self.correction_msg = RTCM()
+
+        # Инициализируем publisher для отправки в topic
+        self.correction_pub = self.create_publisher(RTCM, "/correction_rtcm", 10)
+
+        # Подключаемся по serial-порту
+        try:
+            self.ser = serial.Serial(
+                    port=self.port,
+                    baudrate=self.baud,
+                    parity=serial.PARITY_ODD,
+                    stopbits=serial.STOPBITS_TWO,
+                    bytesize=serial.SEVENBITS)
+            self.ser.isOpen()
+        except:
+            print("port not found")
+            exit()
+
+
+        # Основной цикл
+        try:
+            self.prev_time = 0.0
+            while True:
+                delay = time.time() - self.prev_time
+                self.prev_time = time.time()
+
+                self.prev_time = time.time()
+                out = None
+                # get data from serial
+                while self.ser.inWaiting() > 0:
+                    out = self.ser.read()
+                if out is not None:
+                    print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
+                    self.correction_msg.header.stamp = self.get_clock().now()
+                    self.correction_msg.data = out
+                    print(self.correction_msg)
+                    self.correction_pub.publish(self.correction_msg)
+        except:
+            print("ERROR: close serial")
+
 
 if __name__ == '__main__':
-    try:
-        ser = serial.Serial(
-                port=port,
-                baudrate=baud,
-                parity=serial.PARITY_ODD,
-                stopbits=serial.STOPBITS_TWO,
-                bytesize=serial.SEVENBITS)
-        ser.isOpen()
-    except:
-        print("port not found")
-        exit()
-        
-    correction_msg = RTCM()
-    try:
-        while True:
-
-            delay = time.time() - prev_time
-            prev_time = time.time()
-       
-            # get data from serial
-            out = ''
-            while ser.inWaiting() > 0:
-                out += ser.read(1)
-            if out != '':
-                print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
-                correction_msg.data = out
-                print(correction_msg)
-                # send_brodcast_msgs(out)
-    except:
-        print("ERROR: close serial")
+    rclpy.init()
+    emlid_correction_translator = EmlidCorrectionTranslator()
+    rclpy.spin(emlid_correction_translator)
+    emlid_correction_translator.destroy_node()
+    rclpy.shutdown()
