@@ -1,13 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 """
 Программа принимает поправку с РТК через бродкас и отправляет её на GPS приёмник.
 
 PORT по умолчанию 9000
 """
 
-import rospy
+import rclpy
 from socket import *
 import time
 import serial
