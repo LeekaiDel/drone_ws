@@ -47,13 +47,13 @@ class EmlidCorrectionTranslator(Node):
             self.prev_time = time.time()
 
             self.prev_time = time.time()
-            # out = str()
+            out = None
             # get data from serial
             while self.ser.inWaiting() > 0:
                 out = self.ser.read(self.ser.in_waiting)
             if out is not None:
                 print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
-                self.correction_msg.header.stamp = self.get_clock().now()
+                self.correction_msg.header.stamp = self.get_clock().now().to_msg()
                 self.correction_msg.data = out
                 print(self.correction_msg)
                 self.correction_pub.publish(self.correction_msg)
