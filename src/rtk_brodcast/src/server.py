@@ -47,10 +47,10 @@ class EmlidCorrectionTranslator(rclpy.Node):
                 self.prev_time = time.time()
 
                 self.prev_time = time.time()
-                out = None
+                # out = str()
                 # get data from serial
                 while self.ser.inWaiting() > 0:
-                    out = self.ser.read()
+                    out = self.ser.read(self.ser.in_waiting)
                 if out is not None:
                     print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
                     self.correction_msg.header.stamp = self.get_clock().now()
