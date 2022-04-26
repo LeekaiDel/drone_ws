@@ -6,14 +6,14 @@
 
 
 import rclpy
-# from rclpy import Node
+from rclpy.node import Node
 from socket import *
 import time
 import serial
 from mavros_msgs.msg import RTCM
 
 
-class EmlidCorrectionTranslator(rclpy.Node):
+class EmlidCorrectionTranslator(Node):
     def __init__(self):
         super().__init__("emlid_correction_translator_node")
 
@@ -40,25 +40,25 @@ class EmlidCorrectionTranslator(rclpy.Node):
 
 
         # Основной цикл
-        try:
-            self.prev_time = 0.0
-            while True:
-                delay = time.time() - self.prev_time
-                self.prev_time = time.time()
+        # try:
+        self.prev_time = 0.0
+        while True:
+            delay = time.time() - self.prev_time
+            self.prev_time = time.time()
 
-                self.prev_time = time.time()
-                # out = str()
-                # get data from serial
-                while self.ser.inWaiting() > 0:
-                    out = self.ser.read(self.ser.in_waiting)
-                if out is not None:
-                    print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
-                    self.correction_msg.header.stamp = self.get_clock().now()
-                    self.correction_msg.data = out
-                    print(self.correction_msg)
-                    self.correction_pub.publish(self.correction_msg)
-        except:
-            print("ERROR: close serial")
+            self.prev_time = time.time()
+            # out = str()
+            # get data from serial
+            while self.ser.inWaiting() > 0:
+                out = self.ser.read(self.ser.in_waiting)
+            if out is not None:
+                print("Serial: Get RTK RTCM3. Delay: %f" % (delay))
+                self.correction_msg.header.stamp = self.get_clock().now()
+                self.correction_msg.data = out
+                print(self.correction_msg)
+                self.correction_pub.publish(self.correction_msg)
+        # except:
+        #     print("ERROR: close serial")
 
 
 if __name__ == '__main__':
