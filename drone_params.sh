@@ -1,8 +1,4 @@
 #!/bin/bash
-# export DRONE_MARKER_ID=1            #
-# export DRONE_IP=192.168.1.253       #
-# export DRONE_SAFE_MAX_ANGLE=85      #
-# export DRONE_SAFE_DISARM_DELAY=0.2  #
 export DRONE_ID=0
 
 # Конфигурационные параметры для mavros
