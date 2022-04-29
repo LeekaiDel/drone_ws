@@ -3,11 +3,11 @@
 # export DRONE_IP=192.168.1.253       #
 # export DRONE_SAFE_MAX_ANGLE=85      #
 # export DRONE_SAFE_DISARM_DELAY=0.2  #
-export DRONE_ID=1
+export DRONE_ID=0
 
 # Конфигурационные параметры для mavros
 export MAVROS_GCS_IP=192.168.128.253
-export MAVROS_FCU_URL='/dev/ttyACM0:921600'
+export MAVROS_FCU_URL='/dev/ttyS0:115200'
 export MAVROS_FCU_PORT=14101
 
 # Флаги настройки системы:
