@@ -6,7 +6,7 @@
 export DRONE_ID=1
 
 # Конфигурационные параметры для mavros
-export MAVROS_GCS_IP=192.168.128.253
+export MAVROS_GCS_IP=192.168.128.192
 export MAVROS_FCU_URL='/dev/ttyACM0:921600'
 export MAVROS_FCU_PORT=14101
 

@@ -37,18 +37,18 @@ class TaskManager():
     def main(self):
         while True:
             if self.recive_traj == True:
-                last_waypoint = PoseStamped()
+                # last_waypoint = PoseStamped()
                 # print("\nВыполнение задания...")
-                goal = Goal()
                 for waypoint in self.curent_goal_traj.waypoints:
+                    goal = Goal()
                     goal.pose.point.x = waypoint.pose.position.x
                     goal.pose.point.y = waypoint.pose.position.y
                     goal.pose.point.z = self.height_of_takeoff
-                    while round(math.sqrt((self.curent_drone_pose.pose.position.x - waypoint.pose.position.x)**2 + (self.curent_drone_pose.pose.position.y - waypoint.pose.position.y)**2), 1) > 0.5:
+
+                    while round(math.sqrt((goal.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > 0.5:
                         if self.allow_task_execution:
                             self.completed_path.append(goal)
-                            self.goal_pub.publish(goal)
-
+                            self.goal_pub.publish(goal)     
                             # print(len(self.completed_path))
 
                 self.recive_traj = False
@@ -114,11 +114,13 @@ class TaskManager():
         return_path = list()
         return_path.extend(self.completed_path)
         return_path.reverse()
-        # print(len(return_path))
+        # print("Input:" + str(self.completed_path))
         for goal_point in return_path:
-            while round(math.sqrt((self.curent_drone_pose.pose.position.x - goal_point.pose.point.x)**2 + (self.curent_drone_pose.pose.position.y - goal_point.pose.point.y)**2), 1) > 0.5:
+            # print(round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1))
+            while round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > 0.5:
                 self.goal_pub.publish(goal_point)
         self.completed_path.clear()
+        # print("Output:" + str(len(self.completed_path)))
         print("Задание выполнено")
 
     # Устанавливаем OFFBOARD режим
