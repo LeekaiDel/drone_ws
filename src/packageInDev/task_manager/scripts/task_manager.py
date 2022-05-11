@@ -11,12 +11,13 @@ import sys
 
 class TaskManager():
     def __init__(self):
+        self.completed_path = list()
         self.height_of_takeoff = 1.0    # Высота взлета
 
-        self.drone_is_takeoff = False   # Дрон взлетел?
-        self.drone_is_land = False  # Дрон приземлился?
+        self.drone_is_takeoff = False       # Дрон взлетел?
+        self.drone_is_land = False          # Дрон приземлился?
         self.allow_task_execution = False   # Разрешить выполнение задания
-        self.recive_traj = False    # Получена траектория?
+        self.recive_traj = False            # Получена траектория?
 
         self.drone_state = ExtendedState()
         self.curent_drone_pose = PoseStamped()
@@ -38,14 +39,18 @@ class TaskManager():
             if self.recive_traj == True:
                 last_waypoint = PoseStamped()
                 # print("\nВыполнение задания...")
+                goal = Goal()
                 for waypoint in self.curent_goal_traj.waypoints:
+                    goal.pose.point.x = waypoint.pose.position.x
+                    goal.pose.point.y = waypoint.pose.position.y
+                    goal.pose.point.z = self.height_of_takeoff
                     while round(math.sqrt((self.curent_drone_pose.pose.position.x - waypoint.pose.position.x)**2 + (self.curent_drone_pose.pose.position.y - waypoint.pose.position.y)**2), 1) > 0.5:
-                        goal = Goal()
-                        goal.pose.point.x = waypoint.pose.position.x
-                        goal.pose.point.y = waypoint.pose.position.y
-                        goal.pose.point.z = self.height_of_takeoff
                         if self.allow_task_execution:
+                            self.completed_path.append(goal)
                             self.goal_pub.publish(goal)
+
+                            # print(len(self.completed_path))
+
                 self.recive_traj = False
                 self.curent_goal_traj = GlobalTrajectory()
                 print("\nЗадание выполнено")
@@ -53,7 +58,7 @@ class TaskManager():
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
         while True:
-            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t4. Выключить моторы\n\t")
+            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t4. Выключить моторы\n\t5. Возврат домой\n\t")
             command = input("Введите номер команды из перечня ->\t")
             if command == "exit":
                 break
@@ -96,10 +101,26 @@ class TaskManager():
             elif command == "4":
                 print("Команда: Выключить моторы\n")
                 self.set_disarm()
+            
+            elif command == "5":
+                print("Команда: Назад домой\n")
+                self.return_to_home()
 
             else:
                 print("Не верная команда\n")
     
+    # Возврат домой
+    def return_to_home(self):
+        return_path = list()
+        return_path.extend(self.completed_path)
+        return_path.reverse()
+        # print(len(return_path))
+        for goal_point in return_path:
+            while round(math.sqrt((self.curent_drone_pose.pose.position.x - goal_point.pose.point.x)**2 + (self.curent_drone_pose.pose.position.y - goal_point.pose.point.y)**2), 1) > 0.5:
+                self.goal_pub.publish(goal_point)
+        self.completed_path.clear()
+        print("Задание выполнено")
+
     # Устанавливаем OFFBOARD режим
     def set_offboard_mode(self):
         rospy.wait_for_service('mavros/set_mode')

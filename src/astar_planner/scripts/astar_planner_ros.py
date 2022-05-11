@@ -232,7 +232,7 @@ class GlobalPlanner():
         self.goal_pose_grid = ()
 
         self.radius_of_robot = 0.8
-        self.filter_traj_threshold = 1.2
+        self.filter_traj_threshold = 0.5
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
@@ -271,7 +271,7 @@ class GlobalPlanner():
         """
         self.obstacle_map.clear()
         for i in range(len(self.grid_map_.data)):
-            if self.grid_map_.data[i] > 50:
+            if self.grid_map_.data[i] > 50: #or self.grid_map_.data[i] == -1
                 obj_exist = i in self.obstacle_map
                 if obj_exist == False:
                     self.obstacle_map.append(i)
@@ -366,7 +366,7 @@ class GlobalPlanner():
 
             waypoint.scale.x = self.grid_map_.info.resolution
             waypoint.scale.y = self.grid_map_.info.resolution
-            waypoint.scale.z = self.grid_map_.info.resolution * 10
+            waypoint.scale.z = self.grid_map_.info.resolution * 2
 
             waypoint.pose.position.x = x[i]
             waypoint.pose.position.y = y[i]
@@ -546,7 +546,7 @@ class GlobalPlanner():
             trajectory.append(waypoint)
 
         # print("1: " + str(len(trajectory)))
-        # trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
+        trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
         # trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.1)
         # print("2: " + str(len(trajectory)))
 
