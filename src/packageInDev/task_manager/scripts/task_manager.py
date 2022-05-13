@@ -12,7 +12,8 @@ import sys
 class TaskManager():
     def __init__(self):
         self.completed_path = list()
-        self.height_of_takeoff = 1.0    # Высота взлета
+        self.delta_r = 0.1
+        self.height_of_takeoff = 0.5    # Высота взлета
 
         self.drone_is_takeoff = False       # Дрон взлетел?
         self.drone_is_land = False          # Дрон приземлился?
@@ -45,7 +46,7 @@ class TaskManager():
                     goal.pose.point.y = waypoint.pose.position.y
                     goal.pose.point.z = self.height_of_takeoff
 
-                    while round(math.sqrt((goal.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > 0.5:
+                    while round(math.sqrt((goal.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > self.delta_r:
                         if self.allow_task_execution:
                             self.completed_path.append(goal)
                             self.goal_pub.publish(goal)     
@@ -58,7 +59,7 @@ class TaskManager():
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
         while True:
-            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t4. Выключить моторы\n\t5. Возврат домой\n\t")
+            print("\nПеречень команд:\n\t0. Стоп\n\t1. Взлет\n\t2. Посадка\n\t3. Выполнить задание\n\t4. Выключить моторы\n\t5. Возврат домой\n\texit. Выход\n\t")
             command = input("Введите номер команды из перечня ->\t")
             if command == "exit":
                 break
@@ -117,7 +118,7 @@ class TaskManager():
         # print("Input:" + str(self.completed_path))
         for goal_point in return_path:
             # print(round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1))
-            while round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > 0.5:
+            while round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > self.delta_r:
                 self.goal_pub.publish(goal_point)
         self.completed_path.clear()
         # print("Output:" + str(len(self.completed_path)))

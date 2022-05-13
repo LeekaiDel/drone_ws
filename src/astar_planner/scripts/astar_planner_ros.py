@@ -231,7 +231,7 @@ class GlobalPlanner():
         self.start_pose_grid = ()
         self.goal_pose_grid = ()
 
-        self.radius_of_robot = 0.8
+        self.radius_of_robot = 0.5
         self.filter_traj_threshold = 0.5
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
@@ -545,10 +545,10 @@ class GlobalPlanner():
             waypoint.append(ry[i])
             trajectory.append(waypoint)
 
-        # print("1: " + str(len(trajectory)))
-        trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
-        # trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.1)
-        # print("2: " + str(len(trajectory)))
+        print("Input: " + str(len(trajectory)))
+        # trajectory = self.filter_trajectory_by_saw(trajectory, self.filter_traj_threshold)
+        trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.5)
+        print("Output: " + str(len(trajectory)))
 
 
         self.display_path(trajectory)

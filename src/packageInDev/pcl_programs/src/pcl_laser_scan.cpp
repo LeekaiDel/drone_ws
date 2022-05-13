@@ -26,7 +26,7 @@
 
 //Параметры настройки фильтра
 float resolution_first_voxel_grid = 0.1;  //разрешение воксельной сетки
-float resolution_second_voxel_grid = 0.5;  //разрешение воксельной сетки
+float resolution_second_voxel_grid = 0.1;  //разрешение воксельной сетки
 
 //Глобальные переменные ROS
 ros::Publisher pub_filter_cloud;
@@ -297,31 +297,9 @@ void pointcloud_cb(const sensor_msgs::PointCloud2::ConstPtr &cloud)
     first_sor.setLeafSize(resolution_first_voxel_grid, resolution_first_voxel_grid, resolution_first_voxel_grid);
     first_sor.filter(*pcl_first_voxel_cloud);
 
-    // pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_filtered_cloud, first_sor, resolution_first_voxel_grid);
+    // pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_second_voxel_cloud, second_sor, resolution_second_voxel_grid);
     
-    // SecondVoxelFilter
-    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_second_voxel_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::VoxelGrid<pcl::PointXYZ> second_sor;
-    second_sor.setInputCloud(pcl_first_voxel_cloud);
-    second_sor.setLeafSize(resolution_second_voxel_grid, resolution_second_voxel_grid, resolution_second_voxel_grid);
-    second_sor.filter(*pcl_second_voxel_cloud);
-    
-    // std::cout << se << std::endl; 
-
-    pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_second_voxel_cloud, second_sor, resolution_second_voxel_grid);
-
-    create_point_array_viz(*pcl_second_voxel_cloud);
-    create_voxel_grid_viz(voxel_grid, resolution_second_voxel_grid);
-    std::cout << "________________________________" << std::endl;
-    for(int i = 0; i < voxel_grid.points.size(); i++)
-    {   
-        // if(1.6 > sqrt(pow(voxel_grid.points[i].x - voxel_grid.points[i + 1].x, 2) + pow(voxel_grid.points[i].y - voxel_grid.points[i + 1].y, 2) + pow(voxel_grid.points[i].z - voxel_grid.points[i + 1].z, 2)) > resolution_second_voxel_grid)
-        // {
-
-            // std::cout << sqrt(pow(voxel_grid.points[i + 1].x - voxel_grid.points[i].x, 2) + pow(voxel_grid.points[i + 1].y - voxel_grid.points[i].y, 2) + pow(voxel_grid.points[i + 1].z - voxel_grid.points[i].z, 2)) << std::endl;
-        // }
-        std::cout << voxel_grid.points[i].z << std::endl;
-    }
+    pub_filter_cloud.publish(pcl_first_voxel_cloud);
 
 }
 
