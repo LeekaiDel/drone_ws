@@ -46,9 +46,9 @@ class TaskManager():
                     goal.pose.point.y = waypoint.pose.position.y
                     goal.pose.point.z = self.height_of_takeoff
 
+                    self.completed_path.append(goal)
                     while round(math.sqrt((goal.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > self.delta_r:
                         if self.allow_task_execution:
-                            self.completed_path.append(goal)
                             self.goal_pub.publish(goal)     
                             # print(len(self.completed_path))
 

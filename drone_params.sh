@@ -11,7 +11,7 @@ export MAVROS_FCU_URL='/dev/ttyACM0:921600'
 export MAVROS_FCU_PORT=14101
 
 # Флаги настройки системы:
-export DRONE_REG_USE_POTENTIAL_PLANNER=True    # Использовать потенциальные поля?
+export DRONE_REG_USE_POTENTIAL_PLANNER=False    # Использовать потенциальные поля?
 export DRONE_REG_USE_UNSTABLE_PLANNER=False     # Использовать неустойчивый планировщик?
 export DRONE_REG_USE_GEO_MODE=False             # Использовать расчет позиции в нодах из координат GPS?          
 export USE_D435=False                           # Использовать камеру d435?

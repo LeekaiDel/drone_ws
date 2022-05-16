@@ -231,7 +231,7 @@ class GlobalPlanner():
         self.start_pose_grid = ()
         self.goal_pose_grid = ()
 
-        self.radius_of_robot = 0.5
+        self.radius_of_robot = 0.8
         self.filter_traj_threshold = 0.5
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
