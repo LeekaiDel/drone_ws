@@ -16,15 +16,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(FILES 
   DronePose.msg 
   Goal.msg
-  RoomParams.msg
-  WindowAngleDir.msg
-  WindowPointDir.msg
-  LocalPlannerState.msg
-  Diagnostics.msg
-  DroneInfo.msg
-  DroneInfoArray.msg
-  Strike.msg
   GlobalTrajectory.msg
+  TaskCmd.msg
+  Task.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
