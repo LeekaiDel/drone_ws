@@ -1,21 +1,13 @@
 #!/usr/bin/env python3
 import rospy
-from visualization_msgs.msg import MarkerArray, Marker
-from geometry_msgs.msg import PoseStamped, Pose, Point
-from drone_msgs.msg import GlobalTrajectory, Goal, DronePose
-from mavros_msgs.msg import State, ExtendedState
+from geometry_msgs.msg import PoseStamped #, Pose, Point
+from drone_msgs.msg import GlobalTrajectory, DronePose, TaskManagerControlCmd
+from mavros_msgs.msg import ExtendedState
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
-import math
-import threading
+# import math
+# import threading
 import os
 
-"""
-Атрибуты статуса БЛА:
-    Рабочая высота: 0.5
-    Режим управления: Offboard/Manual
-    Статус моторов: Запущены/Отключены
-    Выполнение задания: В процессе/Приостановлено/Окончено/Прервано
-"""
 
 class TaskManager():
     def __init__(self):
@@ -40,89 +32,92 @@ class TaskManager():
             os.system("clear")
             print("\
 Атрибуты статуса БЛА:\n\n\
-    Рабочая высота: 0.5\n\
-    Режим управления: Offboard/Manual\n\
-    Статус моторов: Запущены/Отключены\n\
-    Выполнение задания: В процессе/Приостановлено/Окончено/Прервано\n\n\
+    Рабочая высота: {0}\n\
+    Режим управления: {1}\n\
+    Статус моторов: {2}\n\
+    Выполнение задания: {3}\n\n\
+    Локальная позиция по X: {4}\n\
+    Локальная позиция по Y: {5}\n\
+    Локальная позиция по Z: {6}\n\n\
 \
 Перечень команд:\n\n\
-    0. Стоп\n\
-    1. Offboard\n\
-    2. Взлет\n\
-    3. Посадка\n\
-    +. Выключить моторы\n\
+    0. Выключить моторы\n\
+    1. Запуск моторов и активация Offboard\n\
+    2. Посадка\n\
+    3. Взлет\n\
+    +. Стоп\n\
     R. Возврат домой\n\
     ET. Выполнение задания\n\
-    SH. Установить рабочую высоты\n\
-    exit. Выход\n"
-                )
+    SH. Установить рабочую высоту\n\
+    exit. Выход\n".format
+        (
+            self.height_of_takeoff, 
+            "Offboard/Manual", 
+            "Запущены/Отключены", 
+            "В процессе/Приостановлено/Окончено/Прервано", 
+            round(self.curent_drone_pose.pose.position.x, 2), 
+            round(self.curent_drone_pose.pose.position.y, 2), 
+            round(self.curent_drone_pose.pose.position.z, 2)
+        )
+    )
             command = input("Введите идентификатор команды из перечня -> ")
             
             if command == 'exit' or command == 'e':
                 exit()
 
             elif command == '0':
-                print('Команда: Стоп\n')
-                self.allow_task_execution = False
-                goal = Goal()
-                goal.pose.point = self.curent_drone_pose.pose.position
-                # self.goal_pub.publish(goal)
+                print('Команда: Выключить моторы\n')
+                self.set_disarm()
 
             elif command == '1': #TODO: Сделать переключение режимов
-                pass
+                print('Команда: Запуск моторов и активация Offboard')
+                self.set_arm()
+                print(self.set_offboard_mode()) #FIXME: проверить 
 
             elif command == '2':
+                print('Команда: Посадка\n')
+                self.set_land()
+
+            elif command == '3':
                 print('Команда: Взлет\n')
-                heigt = float(input('Введите высоту, на которую нужно взлететь -> '))
-                self.height_of_takeoff = heigt
-                if self.drone_is_land:
-                    self.set_arm()
-                    self.set_offboard_mode()
+                hgt = input('Введите высоту, на которую нужно взлететь -> ')
+                if hgt != '':
+                    self.height_of_takeoff = float(hgt)
+                
                 # goal = Goal()
                 # goal.pose.point.x = self.curent_drone_pose.pose.position.x
                 # goal.pose.point.y = self.curent_drone_pose.pose.position.y
                 # goal.pose.point.z = self.height_of_takeoff
                 # self.goal_pub.publish(goal)
 
-            elif command == '2':
-                print('Команда: Посадка\n')
-                self.set_land()
-                self.drone_is_land = True
-            
-            # elif command == '3':
-            #     print('Команда: Выполнить задание\n')
-            #     cmd = input('Введите 0 или 1 - соответственно Запретить или Разрешить -> ')
-            #     if cmd == '0':
-            #         self.allow_task_execution = False
-            #         print('Выполнение задания ЗАПРЕЩЕНО')
-            #     elif cmd == '1':
-            #         self.allow_task_execution = True
-            #         print('Выполнение задания РАЗРЕШЕНО')
+            elif command == '+':
+                print('Команда: Стоп\n')
+                # self.allow_task_execution = False
+                # goal = Goal()
+                # goal.pose.point = self.curent_drone_pose.pose.position
+                # self.goal_pub.publish(goal)
 
-            # elif command == '4':
-            #     print('Команда: Выключить моторы\n')
-            #     self.set_disarm()
+            elif command == 'R':    #TODO: Сделать возврат домой
+                print('Команда: Назад домой\n')
             
-            # elif command == '5':
-            #     print('Команда: Назад домой\n')
-            #     self.return_to_home()
+            elif command == 'ET':
+                print('Команда: Выполнить задание\n')
+                cmd = input('Введите 0 или 1 - соответственно Запретить или Разрешить -> ')
+                if cmd == '0':
+                    self.allow_task_execution = False
+                    print('Выполнение задания ЗАПРЕЩЕНО')
+                elif cmd == '1':
+                    self.allow_task_execution = True
+                    print('Выполнение задания РАЗРЕШЕНО')
 
-            else:
-                print('Не верная команда\n')
-    
-    # Возврат домой
-    def return_to_home(self):
-        return_path = list()
-        return_path.extend(self.completed_path)
-        return_path.reverse()
-        # print("Input:" + str(self.completed_path))
-        for goal_point in return_path:
-            # print(round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1))
-            while round(math.sqrt((goal_point.pose.point.x - self.curent_drone_pose.pose.position.x)**2 + (goal_point.pose.point.y - self.curent_drone_pose.pose.position.y)**2), 1) > self.delta_r:
-                self.goal_pub.publish(goal_point)
-        self.completed_path.clear()
-        # print("Output:" + str(len(self.completed_path)))
-        print("Задание выполнено")
+            elif command == 'SH':   #TODO:  Сделать установку высоты 
+                print('Команда: Установить рабочую высоту\n')
+                hgt = input('Введите значение высоты в метрах-> ')
+                if hgt != '':
+                    self.height_of_takeoff = float(hgt)
+            
+            # else:
+                # print('Не верная команда\n')
 
     # Устанавливаем OFFBOARD режим
     def set_offboard_mode(self):

@@ -14,11 +14,12 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 add_message_files(FILES 
-  DronePose.msg 
-  Goal.msg
-  GlobalTrajectory.msg
-  TaskCmd.msg
-  Task.msg
+  DronePose.msg               # Позиция дрона 
+  Goal.msg                    # Целевая точка
+  GlobalTrajectory.msg        # Траектория 
+  TaskCmd.msg                 # Команды задания
+  Task.msg                    # Задание
+  TaskManagerControlCmd.msg   # Управляющие команды для менеджера команд
 )
 
 ## Generate added messages and services with any dependencies listed here
