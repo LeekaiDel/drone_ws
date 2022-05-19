@@ -3,7 +3,7 @@ byte STOP = 0                           # Остановиться в текущ
 byte TAKEOFF = 1                        # Взлет
 byte LAND = 2                           # Посадка
 byte GO_TO_POINT = 3                    # Достигнуть точки
-byte GO_ALONG_TRAJECTORY = 4            # Движение по хорде
+byte GO_ALONG_TRAJECTORY = 4            # Движение по траектории
 byte RETURN = 5                         # Возврат в начальную позицию
 
 int16 cmd_num                           # Порядковый номер команды
