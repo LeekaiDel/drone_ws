@@ -13,7 +13,7 @@ class TaskManager():
     def __init__(self):
         self.completed_path = list()
         self.delta_r = 0.1
-        self.height_of_takeoff = 0.5    # Высота взлета
+        self.height_of_takeoff = 0.5        # Высота взлета
 
         self.drone_is_takeoff = False       # Дрон взлетел?
         self.drone_is_land = False          # Дрон приземлился?
