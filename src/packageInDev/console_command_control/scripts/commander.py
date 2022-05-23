@@ -2,7 +2,7 @@
 import rospy
 import curses
 from geometry_msgs.msg import PoseStamped #, Pose, Point
-from drone_msgs.msg import GlobalTrajectory, DronePose, TaskManagerControlCmd
+from drone_msgs.msg import GlobalTrajectory, DronePose, TaskManagerControlCmd, TaskCmd
 from mavros_msgs.msg import ExtendedState
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
 # import math
@@ -15,6 +15,8 @@ class TaskManager():
     def __init__(self):
         self.height_of_takeoff = 0.5        # Высота взлета
 
+        self.mode_control = False
+        
         self.drone_is_takeoff = False       # Дрон взлетел?
         self.drone_is_land = False          # Дрон приземлился?
         self.allow_task_execution = False   # Разрешить выполнение задания?
@@ -28,12 +30,13 @@ class TaskManager():
 
         self.cmd = None
         self.drone_state = ExtendedState()
-        self.curent_drone_pose = PoseStamped()
-        self.curent_goal_traj = GlobalTrajectory()
+        self.current_drone_pose = PoseStamped()
+        self.current_goal_traj = GlobalTrajectory()
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.drone_pose_cb, queue_size=10)
         rospy.Subscriber("/mavros/extended_state", ExtendedState, self.drone_state_cb, queue_size=10)
 
-        # self.goal_pub = rospy.Publisher("/goal_pose", Goal, queue_size=10)
+        self.task_pub = rospy.Publisher("/task_manager/task", TaskCmd, queue_size=10)
+
         self.stdscr.clear()
         self.win_teltemerty = self.stdscr.subwin(20, 100, 0, 0)     #(кол-во строк, кол-во столбцов, начало по y, начало по x)
         self.win_input = self.stdscr.subwin(1, 100, 21, 0)          #(кол-во строк, кол-во столбцов, начало по y, начало по x)
@@ -44,15 +47,15 @@ class TaskManager():
         while True:
             try: 
                 self.win_teltemerty.clear()
-                self.win_teltemerty.addstr(0, 0, 'Атрибуты статуса БЛА:')
+                self.win_teltemerty.addstr(0, 0, 'Атрибуты статуса БЛА:') 
                 self.win_teltemerty.addstr(1, 5, f"Рабочая высота: {self.height_of_takeoff}")
-                self.win_teltemerty.addstr(2, 5, f"Режим управления: {self.cmd}")
+                self.win_teltemerty.addstr(2, 5, f"Режим управления: {self.mode_control}")      #TODO: добавить отображение режима управления
                 self.win_teltemerty.addstr(3, 5, f"Статус моторов:")
                 self.win_teltemerty.addstr(4, 5, f"Выполнение задания:")
                 self.win_teltemerty.addstr(5, 5, f"")
-                self.win_teltemerty.addstr(6, 0, f"Локальная позиция по X: {round(self.curent_drone_pose.pose.position.x, 2)}")
-                self.win_teltemerty.addstr(7, 0, f"Локальная позиция по Y: {round(self.curent_drone_pose.pose.position.y, 2)}")
-                self.win_teltemerty.addstr(8, 0, f"Локальная позиция по Z: {round(self.curent_drone_pose.pose.position.z, 2)}")
+                self.win_teltemerty.addstr(6, 0, f"Локальная позиция по X: {round(self.current_drone_pose.pose.position.x, 2)}")
+                self.win_teltemerty.addstr(7, 0, f"Локальная позиция по Y: {round(self.current_drone_pose.pose.position.y, 2)}")
+                self.win_teltemerty.addstr(8, 0, f"Локальная позиция по Z: {round(self.current_drone_pose.pose.position.z, 2)}")
                 self.win_teltemerty.addstr(9, 5, "")
                 self.win_teltemerty.addstr(10, 0, "Перечень команд:")
                 self.win_teltemerty.addstr(11, 5, "0. Выключить моторы")
@@ -69,23 +72,33 @@ class TaskManager():
             except curses.error: 
                 pass
 
+
             if self.cmd == b'e' or self.cmd == b'exit':
                 curses.endwin()
                 exit()
 
+
+            # Выключить моторы
             elif self.cmd == b'0':
                 # print('Команда: Выключить моторы\n')
                 self.set_disarm()
 
-            elif self.cmd == b'1': #TODO: Сделать переключение режимов
-                # print('Команда: Запуск моторов и активация Offboard')
+
+            # Включение Offboard и запуск моторов
+            elif self.cmd == b'1':
                 self.set_arm()
-                print(self.set_offboard_mode()) #FIXME: проверить 
+                self.set_offboard_mode()
 
+
+            # Посадка
             elif self.cmd == b'2':
-                # print('Команда: Посадка\n')
-                self.set_land()
+                task_command = TaskCmd()
+                task_command.header.stamp = rospy.Time().now()
+                task_command.type = TaskCmd.LAND
+                self.task_pub.publish(task_command)
 
+
+            # Взлет
             elif self.cmd == b'3':  #TODO: Добавить проверку на букву
                 # print('Команда: Взлет\n')
                 # hgt = input('Введите высоту, на которую нужно взлететь -> ')
@@ -96,24 +109,37 @@ class TaskManager():
                 self.win_input.clear()
                 if hgt != '':
                     self.height_of_takeoff = float(hgt)
-                # goal = Goal()
-                # goal.pose.point.x = self.curent_drone_pose.pose.position.x
-                # goal.pose.point.y = self.curent_drone_pose.pose.position.y
-                # goal.pose.point.z = self.height_of_takeoff
-                # self.goal_pub.publish(goal)
+                
+                goal_pose = PoseStamped()
+                goal_pose.pose.position.x = self.current_drone_pose.pose.position.x
+                goal_pose.pose.position.y = self.current_drone_pose.pose.position.y
+                goal_pose.pose.position.z = self.height_of_takeoff
+                
+                task_command = TaskCmd()
+                task_command.header.stamp = rospy.Time().now()
+                task_command.type = TaskCmd.TAKEOFF
+                task_command.coordinates.append(goal_pose)
 
+                self.task_pub.publish(task_command)
+
+
+            # Остановка
             elif self.cmd == b'+':
-                # print('Команда: Стоп\n')
-                # self.allow_task_execution = False
-                # goal = Goal()
-                # goal.pose.point = self.curent_drone_pose.pose.position
-                # self.goal_pub.publish(goal)
-                pass
+                task_command = TaskCmd()
+                task_command.header.stamp = rospy.Time().now()
+                task_command.type = TaskCmd.STOP
+                self.task_pub.publish(task_command)
 
-            elif self.cmd == b'R':    #TODO: Сделать возврат домой
-                # print('Команда: Назад домой\n')
-                pass
+
+            # Возврат по траектории в начальную точку
+            elif self.cmd == b'R': 
+                task_command = TaskCmd()
+                task_command.header.stamp = rospy.Time().now()
+                task_command.type = TaskCmd.RETURN
+                self.task_pub.publish(task_command)
             
+
+            #TODO: Запуск выполнения задания 
             elif self.cmd == b'ET':
                 # print('Команда: Выполнить задание\n')
                 # cmd = input('Введите 0 или 1 - соответственно Запретить или Разрешить -> ')
@@ -124,7 +150,9 @@ class TaskManager():
                 #     self.allow_task_execution = True
                 #     print('Выполнение задания РАЗРЕШЕНО')
                 pass
+            
 
+            # Установка рабочей высоты
             elif self.cmd == b'SH': 
                 # print('Команда: Установить рабочую высоту\n')
                 self.win_input.clear()
@@ -156,10 +184,8 @@ class TaskManager():
         try:
             flightModeService = rospy.ServiceProxy('mavros/set_mode', SetMode)
             response = flightModeService(custom_mode='OFFBOARD')
-            return response.mode_sent
         except rospy.ServiceException as e:
             print("Offboard ошибка!")
-            return False
 
 
     # Произвести запуск моторов
@@ -184,21 +210,9 @@ class TaskManager():
             print("Ошибка отключения моторов!")
 
 
-    # Производим посадку в текущей позиции
-    def set_land(self):
-        rospy.wait_for_service('mavros/cmd/land')
-        try:
-            print("Выполнение посадки...")
-            landingService = rospy.ServiceProxy('mavros/cmd/land', CommandTOL)
-            info = landingService(0.0, 0.0, 0.0, 0.0, 0.0)
-            # print(info)
-        except:
-            pass
-
-
     # Получаем данные о позиции дрона
     def drone_pose_cb(self, msg: PoseStamped):
-        self.curent_drone_pose = msg
+        self.current_drone_pose = msg
     
 
     # Получаем данные о текущем состоянии дрона
