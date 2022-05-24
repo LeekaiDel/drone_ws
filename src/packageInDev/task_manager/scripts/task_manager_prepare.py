@@ -14,21 +14,28 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 class TaskManager():
     def __init__(self):
         # params:
-        self.delta_r = 0.1              # Дельта окрестность достижения точки
+        self.delta_r = 0.1                                  # Дельта окрестность достижения точки
 
         # variables:
-        self.working_hight = 0.5        # Рабочая высота
+        self.working_hight = 0.5                            # Рабочая высота
         
         self.drone_state = ExtendedState()  
         self.current_drone_pose = PoseStamped()
 
-        self.completed_path = list()    # Пройденный маршрут
-        self.current_task =  None       # Текущее задание
+        self.completed_path = list()                        # Пройденный маршрут
+        self.current_task =  None                           # Текущее задание
+        self.control_cmd = TaskManagerControlCmd.FINISH     # Команда управления менеджером
 
+        # flags:
+        self.get_new_cmd = False
+        self.stop_command = False
+
+        # ros initialisations:
         rospy.Subscriber("/mavros/extended_state", ExtendedState, self.drone_state_cb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.drone_pose_cb, queue_size=10)
         rospy.Subscriber("/task_manager/task", TaskCmd, self.task_cb, queue_size=10)
-        
+        rospy.Subscriber("/task_manager/control_cmd", TaskManagerControlCmd, self.control_cmd_cb, queue_size=10)
+
         self.task_status_pub = rospy.Publisher("/task_manager/task_status", Goal, queue_size=10)
         self.goal_pub = rospy.Publisher("/goal_pose", Goal, queue_size=10)
         
@@ -38,8 +45,38 @@ class TaskManager():
 
         # Функция проверяет наличие нового задания и передает траекторию на регулятор
         while True:
-            pass
+            # Взлет
+            if self.current_task.type == TaskCmd.TAKEOFF:
+                self.takeoff_cmd(coordinate = self.current_task.coordinates[-1])
 
+
+            # Полет в точку
+            elif self.current_task.type == TaskCmd.GO_TO_POINT:
+                pass
+
+
+            # Полет по траектории
+            elif self.current_task.type == TaskCmd.GO_ALONG_TRAJECTORY:
+                self.go_along_trajectory_cmd(coordinates=self.current_task.coordinates)
+
+
+            # Стоп
+            elif self.current_task.type == TaskCmd.STOP:
+                self.stop_cmd()
+
+
+            # Возврат
+            elif self.current_task.type == TaskCmd.RETURN:
+                pass
+
+
+            # Посадка
+            elif self.current_task.type == TaskCmd.LAND:
+                self.land_cmd()
+
+
+            else:
+                pass
 
     # Получаем данные о позиции дрона
     def drone_pose_cb(self, msg: PoseStamped) -> None:
@@ -49,6 +86,12 @@ class TaskManager():
     # Получаем самую свежую траекторию
     def task_cb(self, msg: TaskCmd) -> None:
         self.current_task = msg
+        self.get_new_cmd = True
+    
+
+    # Получаем команды управления менеджером
+    def control_cmd_cb(self, msg: TaskManagerControlCmd):
+        self.control_cmd = msg.control_cmd
 
 
     # Функция проеряет достигнута ли целевая точка по условию дельта-окрестности
@@ -80,17 +123,30 @@ class TaskManager():
             goal = Goal()
             goal.pose.point.x = pose_point.pose.position.x
             goal.pose.point.y = pose_point.pose.position.y
-            goal.pose.point.z = pose_point.pose.position.z      # FIXME: решить какая будет высота
+            goal.pose.point.z = pose_point.pose.position.z
+            
+            # TODO: добавить возможность задавать курс по траектории
+            if self.control_cmd == TaskManagerControlCmd.BRAKE:
+                self.stop_cmd()
+                break
 
-            self.goal_pub.publish(goal)     
-            while self._reaching_delta_r(self.current_drone_pose, goal, self.delta_r):
-                pass
+            elif self.control_cmd == TaskManagerControlCmd.PAUSE:
+                self.stop_cmd()
+                while self.control_cmd == TaskManagerControlCmd.PAUSE:
+                    pass
+                    
+            elif self.control_cmd == TaskManagerControlCmd.START:
+                self.goal_pub.publish(goal)     
+                while self._reaching_delta_r(self.current_drone_pose, goal, self.delta_r) or self.control_cmd == TaskManagerControlCmd.BRAKE or self.control_cmd == TaskManagerControlCmd.PAUSE:
+                    pass
 
 
     # FIXME: Команда остановки
     def stop_cmd(self) -> None:
         goal = Goal()
         goal.pose.point = self.curent_drone_pose.pose.position
+        yaw = euler_from_quaternion(self.curent_drone_pose.pose.orientation)[2]  # Вытаскиваем угол рыскания из кватерниона FIXME: Возможно придется кватернион взять в скобки
+        goal.pose.course = yaw
         self.goal_pub.publish(goal)
 
 
@@ -99,9 +155,19 @@ class TaskManager():
         # return_path.extend(self.completed_path)
         # return_path.reverse()
         for goal_point in return_path:
-            self.goal_pub.publish(goal_point)
-            while self._reaching_delta_r(self.current_drone_pose, goal_point, self.delta_r):
-                pass
+            if self.control_cmd == TaskManagerControlCmd.BRAKE:
+                self.stop_cmd()
+                break
+
+            elif self.control_cmd == TaskManagerControlCmd.PAUSE:
+                self.stop_cmd()
+                while self.control_cmd == TaskManagerControlCmd.PAUSE:
+                    pass
+
+            elif self.control_cmd == TaskManagerControlCmd.START:
+                self.goal_pub.publish(goal_point)     
+                while self._reaching_delta_r(self.current_drone_pose, goal_point, self.delta_r) or self.control_cmd == TaskManagerControlCmd.BRAKE or self.control_cmd == TaskManagerControlCmd.PAUSE:
+                    pass
 
         return True
 
