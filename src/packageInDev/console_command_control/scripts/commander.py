@@ -11,7 +11,7 @@ import os
 import time
 
 
-class TaskManager():
+class ConsoleCommander():
     def __init__(self):
         self.height_of_takeoff = 0.5        # Высота взлета
 
@@ -44,7 +44,7 @@ class TaskManager():
         self.thread_func_of_input = threading.Thread(target=self.func_of_input, daemon=True)
         self.thread_func_of_input.start()
 
-        while True:
+        while not rospy.is_shutdown():
             try: 
                 self.win_teltemerty.clear()
                 self.win_teltemerty.addstr(0, 0, 'Атрибуты статуса БЛА:') 
@@ -107,7 +107,7 @@ class TaskManager():
                 self.win_input.refresh()
                 hgt = self.win_input.getstr(0, 46)
                 self.win_input.clear()
-                if hgt != '':
+                if hgt != b'':
                     self.height_of_takeoff = float(hgt)
                 
                 goal_pose = PoseStamped()
@@ -160,7 +160,7 @@ class TaskManager():
                 self.win_input.refresh()
                 hgt = self.win_input.getstr(0, 27)
                 self.win_input.clear()
-                if hgt != '':
+                if hgt != b'':
                     self.height_of_takeoff = float(hgt)
             
             self.listen_command = True  # Возобновляем слушание команд меню
@@ -227,6 +227,6 @@ class TaskManager():
 
 
 if __name__ == "__main__":
-    rospy.init_node("task_manager_node")
-    TaskManager()
+    rospy.init_node("console_commander_node")
+    ConsoleCommander()
     rospy.spin()
