@@ -1,0 +1,3 @@
+geometry_msgs/PoseStamped goal_position
+---
+geometry_msgs/PoseStamped[] path
