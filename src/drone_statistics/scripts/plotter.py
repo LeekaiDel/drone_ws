@@ -17,7 +17,7 @@ import copy
 
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------- Глобальные переменные
-use_gps = False
+use_gps = True
 mavros_root = "/mavros"
 drone_pos_topic = "/mavros/local_position/pose"
 drone_pose = DronePose()  # Координаты дрона
@@ -285,34 +285,34 @@ def main():
             print("dist to point:", get_dist_to(drone_pose, goal_point.pose))
 
         # Рисуем графики
-        ax1 = plt.subplot2grid((2, 3), (0, 0))
-        ax1.plot(time_plot, drone_x, label='drone x')
-        ax1.plot(time_plot, goal_x, label='goal x')
-        ax1.set_title('Coords: drone X and goal X')
-        ax1.set_ylabel('x, m')
-        ax1.set_xlabel('t, s')
-        ax1.legend()
-        ax1.grid()
+        # ax1 = plt.subplot2grid((1, 1), (0, 0))   # (2, 3), (0, 0)
+        # ax1.plot(time_plot, drone_x, label='drone x')
+        # ax1.plot(time_plot, goal_x, label='goal x')
+        # ax1.set_title('Coords: drone X and goal X')
+        # ax1.set_ylabel('x, m')
+        # ax1.set_xlabel('t, s')
+        # ax1.legend()
+        # ax1.grid()
 
-        ax2 = plt.subplot2grid((2, 3), (0, 1))
-        ax2.plot(time_plot, drone_y, label='drone y')
-        ax2.plot(time_plot, goal_y, label='goal y')
-        ax2.set_title('Coords: drone Y and goal Y')
-        ax2.set_ylabel('y, m')
-        ax2.set_xlabel('t, s')
-        ax2.legend()
-        ax2.grid()
+        # ax2 = plt.subplot2grid((1, 1), (0, 0))    # (2, 3), (0, 1)
+        # ax2.plot(time_plot, drone_y, label='drone y')
+        # ax2.plot(time_plot, goal_y, label='goal y')
+        # ax2.set_title('Coords: drone Y and goal Y')
+        # ax2.set_ylabel('y, m')
+        # ax2.set_xlabel('t, s')
+        # ax2.legend()
+        # ax2.grid()
 
-        ax3 = plt.subplot2grid((2, 3), (0, 2))
-        ax3.plot(time_plot, drone_z, label='drone z')
-        ax3.plot(time_plot, goal_z, label='goal z')
-        ax3.set_title('Coords: drone Z and goal Z')
-        ax3.set_ylabel('z, m')
-        ax3.set_xlabel('t, s')
-        ax3.legend()
-        ax3.grid()
+        # ax3 = plt.subplot2grid((1, 1), (0, 0))    # (2, 3), (0, 2)
+        # ax3.plot(time_plot, drone_z, label='drone z')
+        # ax3.plot(time_plot, goal_z, label='goal z')
+        # ax3.set_title('Coords: drone Z and goal Z')
+        # ax3.set_ylabel('z, m')
+        # ax3.set_xlabel('t, s')
+        # ax3.legend()
+        # ax3.grid()
 
-        ax4 = plt.subplot2grid((2, 3), (1, 0))
+        ax4 = plt.subplot2grid((1, 1), (0, 0))    # (2, 3), (1, 0)
         ax4.plot(drone_x, drone_y, label='drone')
         ax4.plot(goal_x, goal_y, label='goal')
         ax4.set_title('trajectory XY')

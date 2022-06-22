@@ -4,7 +4,6 @@ from visualization_msgs.msg import MarkerArray, Marker
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseStamped, Pose, Point
 from drone_msgs.msg import GlobalTrajectory
-from astar_planner.srv import GetTrajectory, GetTrajectoryResponse
 import math
 
 class AStarPlanner:
@@ -219,6 +218,7 @@ class GlobalPlanner():
 
         self.robot_pose_ = None
         self.goal_pose_  = PoseStamped()
+        self.trajectory = GlobalTrajectory()
 
         self.grid_map_ = OccupancyGrid()
         self.old_map = OccupancyGrid()
@@ -233,28 +233,17 @@ class GlobalPlanner():
 
         self.radius_of_robot = 0.8
         self.filter_traj_threshold = 0.5
-        self.consider_unfound_area_flag = False
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
-        # rospy.Subscriber("/goal_point", PoseStamped, self.goal_pose_clb, queue_size=10)
+        rospy.Subscriber("/goal_point", PoseStamped, self.goal_pose_clb, queue_size=10)
 
-        # self.send_trajectory_pub = rospy.Publisher("/astar/trajectory", GlobalTrajectory,  queue_size=10)
+        self.send_trajectory_pub = rospy.Publisher("/astar/trajectory", GlobalTrajectory,  queue_size=10)
         self.marker_path_pub = rospy.Publisher("/astar/viz/global_path", Marker, queue_size=10)
         self.marker_obs_pub = rospy.Publisher("/astar/viz/obstacles", MarkerArray, queue_size=10)   # TODO: сделать поинтклауд вместо маркеров, должно разгрузить
         
-        self.service = rospy.Service('/astar/get_trajectory', GetTrajectory, self.get_trajectory_server) 
-
-        rospy.spin()
-
-
-    def get_trajectory_server(self, req):
-        self.goal_pose_ = req.goal_position
-        # print("Get goal position :" + str(self.goal_pose_))
-        self.trajectory_sended = False
-        path = self.planner_loop()
-        # print("Returned path :" + str(path))
-        return GetTrajectoryResponse(path)
+        while not rospy.is_shutdown():
+            self.planner_loop()
 
 
     def map_clb(self, msg: OccupancyGrid):
@@ -282,16 +271,10 @@ class GlobalPlanner():
         """
         self.obstacle_map.clear()
         for i in range(len(self.grid_map_.data)):
-            if self.consider_unfound_area_flag:
-                if self.grid_map_.data[i] > 50 or self.grid_map_.data[i] == -1: # Учитываем не также исследованную зону как препятствие 
-                    obj_exist = i in self.obstacle_map
-                    if obj_exist == False:
-                        self.obstacle_map.append(i)
-            else:
-                if self.grid_map_.data[i] > 50:
-                    obj_exist = i in self.obstacle_map
-                    if obj_exist == False:
-                        self.obstacle_map.append(i)
+            if self.grid_map_.data[i] > 50: #or self.grid_map_.data[i] == -1
+                obj_exist = i in self.obstacle_map
+                if obj_exist == False:
+                    self.obstacle_map.append(i)
 
 
     def world_to_map(self, x:int, y:int):
@@ -403,7 +386,6 @@ class GlobalPlanner():
 
         return angle
 
-
     # Вычисление расстояния между точками
     def getDistanceBetweenPoints(self, p1, p2):
         distance = math.sqrt( math.pow(p2[0]-p1[0], 2) + math.pow(p2[1]-p1[1], 2) )
@@ -440,7 +422,6 @@ class GlobalPlanner():
 
         return distance
     
-
     # Фильтр ступенек заданного размера
     def filter_trajectory_by_saw(self, trajectory, saw_size):
         start_pos_index = -1
@@ -479,7 +460,6 @@ class GlobalPlanner():
                 break
 
         return trajectory
-
 
     # Фильтр по углу между сочленениями
     def filter_trajectory_by_angle(self, trajectory, angle, distance):
@@ -530,6 +510,7 @@ class GlobalPlanner():
 
 
     def planner_loop(self):
+        
         if (self.robot_pose_ == None or self.grid_map_ == None or self.trajectory_sended == True):
             return
 
@@ -537,7 +518,6 @@ class GlobalPlanner():
         obs_y = []
 
         self.get_obstacle_map()
-
         for i in self.obstacle_map:
             x, y = self.get_coords_from_grid_index(i)
             obs_x.append(x)
@@ -569,20 +549,24 @@ class GlobalPlanner():
         trajectory = self.filter_trajectory_by_angle(trajectory, 0.1, 0.5)
         print("Trajectory output: " + str(len(trajectory)))
 
+
         self.display_path(trajectory)
 
-        output_path = list()
+        self.trajectory.waypoints.clear()
         for i in range(len(trajectory)):
             waypoint = PoseStamped()
             waypoint.pose.position.x = trajectory[i][0]
             waypoint.pose.position.y = trajectory[i][1]
 
-            output_path.append(waypoint)
+            self.trajectory.waypoints.append(waypoint)
+        self.send_trajectory_pub.publish(self.trajectory)
+
 
         self.trajectory_sended = True
         self.old_goal_pose = self.goal_pose_
-        return output_path
+        
 
+    # def infill_trajectory(self, x, y):
 
 
 if __name__ == "__main__":

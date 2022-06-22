@@ -11,7 +11,7 @@
 #include <pcl/filters/voxel_grid.h>
 
 //Параметры настройки фильтра
-float resolution_voxel_grid = 0.02;  //разрешение воксельной сетки
+float resolution_voxel_grid = 0.3;  //разрешение воксельной сетки
 //Глобальные переменные ROS
 ros::Publisher pub_filter_cloud;
 
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "pcl_voxel_filter_node");
     ros::NodeHandle nh;
     //Создаем ROS подписчик для получения облака точек из топика 
-    ros::Subscriber sub = nh.subscribe("/camera/depth/color/points", 1000, cloud_cb);
+    ros::Subscriber sub = nh.subscribe("/r200/depth/points", 1000, cloud_cb);
     pub_filter_cloud = nh.advertise<pcl::PCLPointCloud2>("/filter_cloud", 1000);
 
     ros::spin();
