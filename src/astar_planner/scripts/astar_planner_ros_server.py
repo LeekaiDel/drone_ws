@@ -241,9 +241,7 @@ class GlobalPlanner():
 
         rospy.Subscriber("/map", OccupancyGrid, self.map_clb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.robot_pose_clb, queue_size=10)
-        # rospy.Subscriber("/goal_point", PoseStamped, self.goal_pose_clb, queue_size=10)
 
-        # self.send_trajectory_pub = rospy.Publisher("/astar/trajectory", GlobalTrajectory,  queue_size=10)
         self.marker_path_pub = rospy.Publisher("/astar/viz/global_path", Marker, queue_size=10)
         self.marker_obs_pub = rospy.Publisher("/astar/viz/obstacles", MarkerArray, queue_size=10)   # TODO: сделать поинтклауд вместо маркеров, должно разгрузить
         

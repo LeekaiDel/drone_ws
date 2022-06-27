@@ -5,6 +5,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Point, TwistStamped
 from drone_msgs.msg import GlobalTrajectory, Goal, DronePose, TaskCmd, TaskManagerControlCmd
 from mavros_msgs.msg import State, ExtendedState 
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
+from astar_planner.srv import GetTrajectory
 import math
 import threading
 import sys
@@ -113,6 +114,18 @@ class TaskManager():
         return round(math.sqrt((goal_pose.pose.point.x - current_pose.pose.position.x)**2 + (goal_pose.pose.point.y - current_pose.pose.position.y)**2) + (goal_pose.pose.point.z - current_pose.pose.position.z)**2, 1) >= delta_r
 
 
+    # Функция вызова запроса к А*
+    def call_a_star(self, goal_position): 
+        rospy.wait_for_service('/astar/get_trajectory')
+        try:
+            get_path_service = rospy.ServiceProxy('/astar/get_trajectory', GetTrajectory)
+            resp = get_path_service(goal_position)
+            return resp
+        except rospy.ServiceException as e:
+            print("Service AStar call failed: %s"%e)
+            
+
+
     # FIXME: Команда взлет
     def takeoff_cmd(self, coordinate: PoseStamped) -> bool:
         goal = Goal()
@@ -135,7 +148,7 @@ class TaskManager():
             return True
 
 
-    # TODO: Полет по траектории
+    # FIXME: Полет по траектории
     def go_along_trajectory_cmd(self, coordinates: list) -> bool:
         for pose_point in coordinates:
             goal = Goal()
@@ -165,9 +178,10 @@ class TaskManager():
             req = PoseStamped
             coordinates = resp 
             """
-            # if self.go_along_trajectory_cmd(coordinates)
-                # return True
-                
+            path = self.call_a_star(coordinate)    
+            if self.go_along_trajectory_cmd(path):
+                return True
+
         else:
             goal = Goal()
             goal.pose.point = coordinate.pose.position

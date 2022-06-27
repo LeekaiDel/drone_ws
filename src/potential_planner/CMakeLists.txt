@@ -137,21 +137,21 @@ include_directories(
   # include
   ${catkin_INCLUDE_DIRS}
   )
-include_directories(${EIGEN_INCLUDE_DIRS})
+# include_directories(${EIGEN_INCLUDE_DIRS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(potential_planner_cpp_node
-  src/potential_planner.cpp
-  src/potential_planner.h)
+# add_executable(potential_planner_cpp_node
+#   src/potential_planner.cpp
+#   src/potential_planner.h)
 
-add_dependencies(potential_planner_cpp_node ${PROJECT_NAME}_gencfg)
+# add_dependencies(potential_planner_cpp_node ${PROJECT_NAME}_gencfg)
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(potential_planner_cpp_node yaml-cpp
-  ${catkin_LIBRARIES}
-  )
+# ## Specify libraries to link a library or executable target against
+# target_link_libraries(potential_planner_cpp_node yaml-cpp
+#   ${catkin_LIBRARIES}
+#   )
 
 catkin_install_python(PROGRAMS bin/potential_planner
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

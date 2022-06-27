@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #coding=utf8
 
 import rospy
@@ -29,7 +29,7 @@ def main():
             data_joy_y0 = data_joy.axes[1]
             data_joy_x1 = data_joy.axes[3]
             data_joy_y1 = data_joy.axes[4]
-
+            twist_to_mavros.header.frame_id = "map"
             twist_to_mavros.twist.linear.x = max_twist_horizontal * data_joy_y1
             twist_to_mavros.twist.linear.y = max_twist_horizontal * data_joy_x1
 
