@@ -28,8 +28,8 @@ include_directories(
 link_directories( ${PCL_LIBRARY_DIRS} )
 add_definitions( ${PCL_DEFINITIONS} )
 
-# add_executable(pcl_scan_converter src/pcl_laser_scan.cpp)
-# target_link_libraries(pcl_scan_converter ${catkin_LIBRARIES})
+add_executable(pcl_scan_eater src/pcl_laser_scan_eater.cpp)
+target_link_libraries(pcl_scan_eater ${catkin_LIBRARIES})
 
-add_executable(pcl src/pcl_camera_eater.cpp)
-target_link_libraries(pcl ${catkin_LIBRARIES})
+add_executable(pcl_camera_eater src/pcl_camera_eater.cpp)
+target_link_libraries(pcl_camera_eater ${catkin_LIBRARIES})

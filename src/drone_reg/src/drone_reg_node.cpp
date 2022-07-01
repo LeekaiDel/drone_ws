@@ -423,7 +423,7 @@ int main(int argc, char** argv) {
     pub_vector_twist = n.advertise<sensor_msgs::Imu> ("/reg_vector_twist", queue_size);
 
     geometry_msgs::TwistStamped ctr_msg;
-
+    ctr_msg.header.frame_id = "map";
     double old_time = ros::Time::now().toSec();
     double dt = 0.0;
 
@@ -448,7 +448,7 @@ int main(int argc, char** argv) {
         if (pose_timer < pose_lost_time)
         {
             vel_pub.publish(ctr_msg);
-            pub_vector_twist.publish(setup_vector_twist(ctr_msg));  
+            // pub_vector_twist.publish(setup_vector_twist(ctr_msg));  
         }
         else {
             if (print_timer > print_delay) {

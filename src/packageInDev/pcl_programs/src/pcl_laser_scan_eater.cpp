@@ -25,8 +25,7 @@
 #include <pcl/filters/conditional_removal.h>
 
 //Параметры настройки фильтра
-float resolution_first_voxel_grid = 0.1;  //разрешение воксельной сетки
-float resolution_second_voxel_grid = 0.1;  //разрешение воксельной сетки
+float resolution_voxel_grid = 0.3;   //разрешение воксельной сетки
 
 //Глобальные переменные ROS
 ros::Publisher pub_filter_cloud;
@@ -56,7 +55,7 @@ void create_point_array_viz(pcl::PointCloud<pcl::PointXYZ> point_cloud)
     marker.header.stamp = ros::Time();
     marker.type = visualization_msgs::Marker::SPHERE;
     marker.action = visualization_msgs::Marker::ADD;
-    float scale = resolution_first_voxel_grid;
+    float scale = resolution_voxel_grid;
     for(int i = 0; i < point_cloud.points.size(); i++)
     {   
         // std::cout << point_cloud.points[i] << std::endl;
@@ -106,7 +105,7 @@ void create_voxel_grid_viz(pcl::PointCloud<pcl::PointXYZ> point_cloud, float res
     visualization_msgs::MarkerArray array_points_marker;
 
     visualization_msgs::Marker marker;
-    marker.header.frame_id = "r200";
+    marker.header.frame_id = "base_link";
     marker.header.stamp = ros::Time();
     marker.type = visualization_msgs::Marker::CUBE;
     marker.action = visualization_msgs::Marker::ADD;
@@ -129,7 +128,7 @@ void create_voxel_grid_viz(pcl::PointCloud<pcl::PointXYZ> point_cloud, float res
     }
 
     // visualization_msgs::Marker marker;
-    marker.header.frame_id = "r200";
+    marker.header.frame_id = "base_link";
     marker.header.stamp = ros::Time();
     marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     // marker.action = visualization_msgs::Marker::ADD;
@@ -153,6 +152,7 @@ void create_voxel_grid_viz(pcl::PointCloud<pcl::PointXYZ> point_cloud, float res
 
     pub_voxel_grid_viz.publish(array_points_marker);
 }
+
 
 void analise_histogram(Eigen::RowVectorXf histogram)
 {
@@ -206,7 +206,7 @@ pcl::PointCloud<pcl::PointXYZ> get_voxel_grid(pcl::PointCloud<pcl::PointXYZ> pcl
     return voxel_grid;
 }
 
-/*
+
 void lidar_cloud_cb(const sensor_msgs::LaserScan::ConstPtr &laser_scan)
 {   
     laser_geometry::LaserProjection projector;
@@ -217,97 +217,39 @@ void lidar_cloud_cb(const sensor_msgs::LaserScan::ConstPtr &laser_scan)
     ros_pcl2_to_pcl_pcl(sensor_proj_cloud, *point_cloud);
     
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
-    float theta = current_course; // The angle of rotation in radians
-    transform_1 (0,0) = cos (theta);
-    transform_1 (0,1) = -sin(theta);
-    transform_1 (1,0) = sin (theta);
-    transform_1 (1,1) = cos (theta);
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+    // std::cout << current_course << std::endl;
+
+    transform (0,0) = cos (current_course);
+    transform (0,1) = -sin(current_course);
+    transform (1,0) = sin (current_course);
+    transform (1,1) = cos (current_course);
 
     // Executing the transformation
-    pcl::transformPointCloud(*point_cloud, *cloud, transform_1);
-
-    // Filter
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
-    // Create the filtering object
-    // pcl::StatisticalOutlierRemoval<pcl::PointXYZ> filter;
-    // filter.setInputCloud (cloud);
-    // filter.setMeanK (100);
-    // filter.setStddevMulThresh (0.3);
-    // filter.filter (*cloud_filtered);
-    // convolution.convolve(outputCloud);
-
-    // Filter 2
-    pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-    // build the filter
-    outrem.setInputCloud(cloud);
-    outrem.setRadiusSearch(5.0);
-    outrem.setMinNeighborsInRadius (150);
-    outrem.setKeepOrganized(true);
-    // apply filter
-    outrem.filter (*cloud_filtered);
-
-
-   
-    // float resolution = 0.1;
-    // VoxelFilter
-    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::VoxelGrid<pcl::PointXYZ> sor;
-    sor.setInputCloud(cloud_filtered);
-    sor.setLeafSize(resolution_first_voxel_grid, resolution_first_voxel_grid, resolution_first_voxel_grid);
-    sor.filter(*pcl_filtered_cloud);
+    pcl::transformPointCloud(*point_cloud, *cloud, transform);
     
-    // sor.setInputCloud(pcl_filtered_cloud);
-    // sor.setLeafSize(resolution_voxel_grid, resolution_voxel_grid, resolution_voxel_grid);
-    // sor.filter(*pcl_filtered_cloud);
-
-    pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_filtered_cloud, sor);
-    // std::cout << voxel_grid << std::endl;
-
-    // // Формируем массив маркеров каждой точки и выводим в rviz
+    // VoxelFilter
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_voxel_grid_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::VoxelGrid<pcl::PointXYZ> sor;
+    sor.setInputCloud(cloud);
+    sor.setLeafSize(resolution_voxel_grid, resolution_voxel_grid, resolution_voxel_grid);
+    sor.filter(*pcl_voxel_grid_cloud);
+    
+    pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_voxel_grid_cloud, sor, resolution_voxel_grid);
+   
+    // Формируем массив маркеров каждой точки и выводим в rviz
     // sensor_msgs::PointCloud ros_pcl_filtered_cloud;
     // sensor_msgs::convertPointCloud2ToPointCloud(sensor_proj_cloud, ros_pcl_filtered_cloud);
-    create_point_array(voxel_grid);
+    create_voxel_grid_viz(voxel_grid, resolution_voxel_grid);
 
-    pub_filter_cloud.publish(sensor_proj_cloud);
-}
-*/
-
-void pointcloud_cb(const sensor_msgs::PointCloud2::ConstPtr &cloud)
-{   
-
-    pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    ros_pcl2_to_pcl_pcl(*cloud, *point_cloud);
-    
-    // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_one(new pcl::PointCloud<pcl::PointXYZ>);
-    // Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
-    // float theta = current_course; // The angle of rotation in radians
-    // transform_1 (0,0) = cos (theta);
-    // transform_1 (0,1) = -sin(theta);
-    // transform_1 (1,0) = sin (theta);
-    // transform_1 (1,1) = cos (theta);
-
-    // // Executing the transformation
-    // pcl::transformPointCloud(*point_cloud, *cloud_one, transform_1);
-
-    // FirstVoxelFilter
-    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_first_voxel_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::VoxelGrid<pcl::PointXYZ> first_sor;
-    first_sor.setInputCloud(point_cloud);
-    first_sor.setLeafSize(resolution_first_voxel_grid, resolution_first_voxel_grid, resolution_first_voxel_grid);
-    first_sor.filter(*pcl_first_voxel_cloud);
-
-    // pcl::PointCloud<pcl::PointXYZ> voxel_grid = get_voxel_grid(*pcl_second_voxel_cloud, second_sor, resolution_second_voxel_grid);
-    
-    pub_filter_cloud.publish(pcl_first_voxel_cloud);
-
+    // pub_filter_cloud.publish(*cloud);
 }
 
-/*
- * Функция получения текущей позиции
- */
+
+ //Функция получения текущей позиции
 void poseCb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
+    // std::cout << 1 << std::endl;
     tf::Quaternion q(msg->pose.orientation.x,
                      msg->pose.orientation.y,
                      msg->pose.orientation.z,
@@ -318,19 +260,21 @@ void poseCb(const geometry_msgs::PoseStamped::ConstPtr& msg)
     current_course = yaw;
 }
 
+
 int main(int argc, char **argv)
 {
     //Init ROS node
     ros::init(argc, argv, "pcl_voxel_filter_scan");
     ros::NodeHandle nh;
-    //Создаем ROS подписчик для получения облака точек из топика 
-    // ros::Subscriber sub = nh.subscribe("/scan", 1000, lidar_cloud_cb);
-    ros::Subscriber sub_pose = nh.subscribe("/mavros/local_position/pose", 10, poseCb);
-    ros::Subscriber sub = nh.subscribe("/r200/depth/points", 10, pointcloud_cb);
 
-    pub_filter_cloud = nh.advertise<pcl::PCLPointCloud2>("/filter_cloud", 1000);
+    //Создаем ROS подписчик для получения облака точек из топика 
+    ros::Subscriber sub_pose = nh.subscribe("/mavros/local_position/pose", 10, poseCb);
+    ros::Subscriber sub_lidar = nh.subscribe("/scan", 10, lidar_cloud_cb);
+    //Создаем паблишеры
+    // pub_filter_cloud = nh.advertise<pcl::PCLPointCloud2>("/filter_cloud", 1000);
     pub_marker_array = nh.advertise<visualization_msgs::MarkerArray>("/point_cloud_viz", 1000);
     pub_voxel_grid_viz = nh.advertise<visualization_msgs::MarkerArray>("/voxel_grid_viz", 1000);
+
     ros::spin();
     return 0;
 }

@@ -7,7 +7,7 @@ from geometry_msgs.msg import TwistStamped
 
 topic_twist = "/mavros/setpoint_velocity/cmd_vel"
 max_twist_vertical = 1.0
-max_twist_horizontal = 1.5
+max_horizontal_twist = 1.5
 max_angular_twist = 1.0
 
 data_joy = Joy()
@@ -17,6 +17,7 @@ def joy_cb(msg_data):
     global data_joy
     data_joy = msg_data
 
+# TODO: Добавить вращение вестора скорости с учетом рыскания квадрокоптера
 
 def main():
     rospy.init_node('Joy_to_mavros_node')
@@ -30,10 +31,10 @@ def main():
             data_joy_x1 = data_joy.axes[3]
             data_joy_y1 = data_joy.axes[4]
             twist_to_mavros.header.frame_id = "map"
-            twist_to_mavros.twist.linear.x = max_twist_horizontal * data_joy_y1
-            twist_to_mavros.twist.linear.y = max_twist_horizontal * data_joy_x1
 
-            twist_to_mavros.twist.linear.z = max_twist_vertical * data_joy_y0
+            twist_to_mavros.twist.linear.x = max_horizontal_twist * data_joy_y1
+            twist_to_mavros.twist.linear.y = max_horizontal_twist * data_joy_x1
+            twist_to_mavros.twist.linear.z = max_vertical_twist * data_joy_y0
 
             twist_to_mavros.twist.angular.z = max_angular_twist * data_joy_x0
 
