@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/drone_ws/devel/setup.bash
+
 # export DRONE_MARKER_ID=1            #
 # export DRONE_IP=192.168.1.253       #
 # export DRONE_SAFE_MAX_ANGLE=85      #
