@@ -20,7 +20,7 @@
 	</node>
 
     <!-- launch tf_broadcaster -->
-    <!-- <node pkg="robot_setup_tf" name="tf_broadcaster" type="tf_broadcaster"/> -->
+    <node pkg="task_manager" name="task_manager_node" type="task_manager_prepare.py"/>
 
     <!-- run reg -->
     <include file="$(find drone_essentials)/launch/reg.launch"/>

@@ -34,6 +34,7 @@ class TaskManager():
         thread_main = threading.Thread(target=self.main, daemon=True)
         thread_main.start()
 
+
     # Функция проверяет наличие нового задания и передает траекторию на регулятор
     def main(self):
         while True:
@@ -55,6 +56,7 @@ class TaskManager():
                 self.recive_traj = False
                 self.curent_goal_traj = GlobalTrajectory()
                 print("\nЗадание выполнено")
+
 
     # Функция обработки ввода/вывода команд в консоль
     def task_menu_cb(self):
@@ -110,6 +112,7 @@ class TaskManager():
             else:
                 print("Не верная команда\n")
     
+
     # Возврат домой
     def return_to_home(self):
         return_path = list()
@@ -124,6 +127,7 @@ class TaskManager():
         # print("Output:" + str(len(self.completed_path)))
         print("Задание выполнено")
 
+
     # Устанавливаем OFFBOARD режим
     def set_offboard_mode(self):
         rospy.wait_for_service('mavros/set_mode')
@@ -135,6 +139,7 @@ class TaskManager():
             print("Offboard ошибка!")
             return False
 
+
     # Произвести запуск моторов
     def set_arm(self):
         rospy.wait_for_service('mavros/cmd/arming')
@@ -145,6 +150,7 @@ class TaskManager():
         except rospy.ServiceException as e:
             print("Ошибка запуска моторов!")
 
+
     # Произвести отключение моторов
     def set_disarm(self):
         rospy.wait_for_service('mavros/cmd/arming')
@@ -154,6 +160,7 @@ class TaskManager():
             armService(False)
         except rospy.ServiceException as e:
             print("Ошибка отключения моторов!")
+
 
     # Производим посадку в текущей позиции
     def set_land(self):
@@ -166,10 +173,12 @@ class TaskManager():
         except:
             pass
 
+
     # Получаем данные о позиции дрона
     def drone_pose_cb(self, msg: PoseStamped):
         self.curent_drone_pose = msg
     
+
     # Получаем данные о текущем состоянии дрона
     def drone_state_cb(self, msg: ExtendedState):
         self.drone_state = msg
@@ -179,6 +188,7 @@ class TaskManager():
         elif msg.landed_state == ExtendedState.LANDED_STATE_ON_GROUND:
             self.drone_is_takeoff = False
             self.drone_is_land = True
+
 
     # Получаем самую свежую траекторию
     def trajectory_cb(self, msg: GlobalTrajectory):

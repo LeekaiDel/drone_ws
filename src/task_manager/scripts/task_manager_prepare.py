@@ -17,36 +17,27 @@ class TaskManager():
         # params:
         self.delta_r = 0.1                                  # Дельта окрестность достижения точки
         self.use_global_planner = True
-
         # variables:
         self.working_hight = 0.5                            # Рабочая высота
-        
         self.drone_state = ExtendedState()  
         self.current_drone_pose = PoseStamped()             # Текущая позиция дрона
         self.current_velocity = TwistStamped()              # Текущая скорость дрона
-
         self.completed_path = list()                        # Пройденный маршрут
         self.current_task =  TaskCmd()                      # Текущее задание
         self.control_cmd = TaskManagerControlCmd.FINISH     # Команда управления менеджером
-
         # flags:
         self.get_new_cmd = False
         self.stop_command = False
-
         # ros initialisations:
         # rospy.Subscriber("/mavros/extended_state", ExtendedState, self.drone_state_cb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.drone_pose_cb, queue_size=10)
         rospy.Subscriber("/mavros/local_position/velocity_local", TwistStamped, self.local_vel_cb, queue_size=10)
         rospy.Subscriber("/task_manager/task", TaskCmd, self.task_cb, queue_size=10)
         rospy.Subscriber("/task_manager/control_cmd", TaskManagerControlCmd, self.control_cmd_cb, queue_size=10)
-
         self.task_status_pub = rospy.Publisher("/task_manager/task_status", Goal, queue_size=10)
         self.goal_pub = rospy.Publisher("/goal_pose", Goal, queue_size=10)
-        
         # thread_main = threading.Thread(target=self.main, daemon=True)
         # thread_main.start()
-
-
         # Функция проверяет наличие нового задания и передает траекторию на регулятор
         while not rospy.is_shutdown():
             if self.get_new_cmd == True:
@@ -124,7 +115,6 @@ class TaskManager():
         except rospy.ServiceException as e:
             print("Service AStar call failed: %s"%e)
             
-
 
     # FIXME: Команда взлет
     def takeoff_cmd(self, coordinate: PoseStamped) -> bool:
