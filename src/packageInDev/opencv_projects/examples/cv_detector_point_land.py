@@ -216,7 +216,6 @@ def land():
     goal_pose_pub.publish(goal_point)
 
 
-
 # функция вычисления количества пикселей на метр
 def recalculation_cords(AllBinary, radius_of_point_land):
     LIST = []
@@ -341,14 +340,9 @@ def main():
             else:
                 print # ("marker of land False")
 
-
-
-
             # проверяем был ли обнаружен маркер посадки и если да, производим выполнение кода навигации
             if landing_flag:
                 print("LANDING!")
-
-
 
                 corector_pose(point_land_green, do)
 
