@@ -7,7 +7,7 @@ source ~/drone_ws/devel/setup.bash
 # export DRONE_SAFE_DISARM_DELAY=0.2  #
 export DRONE_ID=1
 
-# Конфигурационные параметры для mavros
+# Конфигурационные параметры для mavros:
 export MAVROS_GCS_IP=192.168.128.192
 export MAVROS_FCU_URL='/dev/ttyACM0:921600'
 export MAVROS_FCU_PORT=14101
@@ -18,8 +18,6 @@ export DRONE_REG_USE_UNSTABLE_PLANNER=False     # Использовать не�
 export DRONE_REG_USE_GEO_MODE=False             # Использовать расчет позиции в нодах из координат GPS?          
 export USE_D435=False                           # Использовать камеру d435?
 
-# Настройки для rosmaster 
-#export ROS_MASTER_URI=http://localhost:11311/
-#export ROS_IP=localhost
+# Настройки для rosmaster:
+#export ROS_MASTER_URI=http://192.168.128.251:11311/
 #export ROS_HOSTNAME=localhost
-
