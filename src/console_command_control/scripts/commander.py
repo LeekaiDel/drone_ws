@@ -2,7 +2,7 @@
 import rospy
 import curses
 from geometry_msgs.msg import PoseStamped #, Pose, Point
-from drone_msgs.msg import GlobalTrajectory, DronePose, TaskManagerControlCmd, TaskCmd
+from drone_msgs.msg import GlobalTrajectory, DronePose, CmdManagerControlCmd, TaskCmd
 from mavros_msgs.msg import ExtendedState
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
 # import math

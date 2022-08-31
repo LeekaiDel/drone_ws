@@ -20,7 +20,7 @@
 	</node>
 
     <!-- launch tf_broadcaster -->
-    <node pkg="task_manager" name="task_manager_node" type="task_manager_prepare.py"/>
+    <node pkg="command_manager" name="command_manager_node" type="command_manager.py" output="screen"/>
 
     <!-- run reg -->
     <include file="$(find drone_essentials)/launch/reg.launch"/>

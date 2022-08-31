@@ -219,6 +219,7 @@ class GlobalPlanner():
 
         self.robot_pose_ = None
         self.goal_pose_  = PoseStamped()
+        self.work_hight = 0.0
 
         self.grid_map_ = OccupancyGrid()
         self.old_map = OccupancyGrid()
@@ -252,6 +253,7 @@ class GlobalPlanner():
 
     def get_trajectory_server(self, req):
         self.goal_pose_ = req.goal_position
+        self.work_hight = req.work_hight.data
         # print("Get goal position :" + str(self.goal_pose_))
         self.trajectory_sended = False
         path = self.planner_loop()
@@ -578,13 +580,12 @@ class GlobalPlanner():
             waypoint = PoseStamped()
             waypoint.pose.position.x = trajectory[i][0]
             waypoint.pose.position.y = trajectory[i][1]
-
+            waypoint.pose.position.z = self.work_hight
             output_path.append(waypoint)
 
         self.trajectory_sended = True
         self.old_goal_pose = self.goal_pose_
         return output_path
-
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ add_message_files(FILES
   GlobalTrajectory.msg        # Траектория 
   TaskCmd.msg                 # Команды задания
   Task.msg                    # Задание
-  TaskManagerControlCmd.msg   # Управляющие команды для менеджера команд
+  CmdManagerControlCmd.msg   # Управляющие команды для менеджера команд
 )
 
 ## Generate added messages and services with any dependencies listed here

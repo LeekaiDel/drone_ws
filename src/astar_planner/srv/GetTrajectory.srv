@@ -1,3 +1,4 @@
-geometry_msgs/PoseStamped goal_position
+geometry_msgs/PoseStamped goal_position     # Целевая точка
+std_msgs/Float32 work_hight                 # Рабочая высота
 ---
-geometry_msgs/PoseStamped[] path
+geometry_msgs/PoseStamped[] path            # Спланированный маршрут

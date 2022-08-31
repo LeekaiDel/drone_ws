@@ -1,6 +1,6 @@
 dist_offset: 1.0
 k_buff: 2.0
-r_view: 0.8
+r_view: 1.5
 rc_min: 0.4
 velocity_gain: 0.21
 view_angle: 360.0
