@@ -12,6 +12,7 @@
 	<arg name="log_output" default="log" />
 	<arg name="fcu_protocol" default="v2.0" />
 	<arg name="respawn_mavros" default="false" />
+	
 	<group>
 		<push-ros-namespace namespace="uav_$(env DRONE_ID)"/>
 		<node pkg="mavros" exec="mavros_node">

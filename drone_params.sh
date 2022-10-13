@@ -3,7 +3,7 @@ export DRONE_ID=0
 
 # Конфигурационные параметры для mavros
 export MAVROS_GCS_IP=192.168.128.253
-export MAVROS_FCU_URL='/dev/ttyS0:115200'
+export MAVROS_FCU_URL='/dev/ttyACM0:115200'
 export MAVROS_FCU_PORT=14101
 
 # Флаги настройки системы:
@@ -14,8 +14,4 @@ export USE_D435=False                           # Использовать ка�
 
 export ROS_DOMAIN_ID=137
 
-# Настройки для rosmaster 
-#export ROS_MASTER_URI=http://localhost:11311/
-#export ROS_IP=localhost
-#export ROS_HOSTNAME=localhost
 

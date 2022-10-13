@@ -1,5 +1,5 @@
 <launch>
-	<arg name="fcu_url" default="/dev/ttyACM0:57600"/>
+	<arg name="fcu_url" default="udp://:14550@"/>
 
 	<arg name="gcs_ip" default="10.131.98.89" />
 	<arg name="fcu_port" default="14101" />
