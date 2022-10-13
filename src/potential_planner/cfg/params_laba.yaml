@@ -1,4 +1,4 @@
 angle_vec: 0.0
-c_rep: 0.8
+c_rep: 0.15
 k_vel: 0.0
-r_field: 1.5
+r_field: 1.0

@@ -2,7 +2,7 @@
     <param name="use_sim_time" value="true"/>
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
       <!--remap from="scan" to="base_scan"/-->
-      <param name="map_update_interval" value="51.0"/>
+      <param name="map_update_interval" value="1.0"/>
       <param name="maxUrange" value="16.0"/>
       <param name="sigma" value="0.05"/>
       <param name="kernelSize" value="1"/>
@@ -25,7 +25,7 @@
       <param name="ymin" value="-50.0"/>
       <param name="xmax" value="50.0"/>
       <param name="ymax" value="50.0"/>
-      <param name="delta" value="0.05"/>
+      <param name="delta" value="0.5"/>
       <param name="llsamplerange" value="0.01"/>
       <param name="llsamplestep" value="0.01"/>
       <param name="lasamplerange" value="0.005"/>
