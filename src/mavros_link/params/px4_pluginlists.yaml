@@ -1,6 +1,6 @@
 /**:    
   ros__parameters:  
-    plugin_allowlist: [gps_rtk, gps_status, setpoint_position, setpoint_velocity]
+    plugin_allowlist: [gps_rtk, gps_status, setpoint_position, setpoint_velocity, vibration, imu]
     
     # plugin_denylist: [
     #   # gps_rtk,
