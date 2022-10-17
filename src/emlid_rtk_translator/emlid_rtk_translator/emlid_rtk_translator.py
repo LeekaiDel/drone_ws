@@ -16,7 +16,7 @@ class EmlidRtkTranslator(Node):
     def __init__(self):
         super().__init__("emlid_rtk_translator_node")
 
-        self.port = "/dev/ttyACM0"
+        self.port = "/dev/ttyACM1"
         self.baud = 115200
 
         self.correction_msg = RTCM()
