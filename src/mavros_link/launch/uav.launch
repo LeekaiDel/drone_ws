@@ -1,30 +1,29 @@
 <launch>
 	<arg name="fcu_url" default="$(env MAVROS_FCU_URL)"/>
-	<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)" />
-	<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)" />
+	<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)"/>
+	<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)"/>
 
-	<arg name="gcs_url" default="udp://:$(var fcu_port)@$(var gcs_ip):14550" />
+	<arg name="gcs_url" default="udp://:$(var fcu_port)@$(var gcs_ip):14550"/>
 	
-	<arg name="tgt_system"  default=""/>
-	<arg name="tgt_component"  default=""/>
-	<arg name="log_output" default="log" />
-	<arg name="fcu_protocol" default="v2.0" />
-	<arg name="respawn_mavros" default="false" />
-	
+	<arg name="tgt_system"  default="$(env DRONE_ID)"/>
+	<arg name="tgt_component"  default="$(env DRONE_ID)"/>
+	<arg name="log_output" default="log"/>
+	<arg name="fcu_protocol" default="v2.0"/>
+	<arg name="respawn_mavros" default="false"/>
+
 	<arg name="config_yaml" default="$(find-pkg-share mavros_link)/px4_config.yaml"/>
 	<arg name="pluginlists_yaml" default="$(find-pkg-share mavros_link)/px4_pluginlists.yaml"/>
-			
-	<group>
-		<push-ros-namespace namespace="uav_$(env DRONE_ID)"/>
-		<node pkg="mavros" exec="mavros_node">
 
-			<param name="fcu_url" value="$(var fcu_url)" />
-			<param name="gcs_url" value="$(var gcs_url)" />
-			<param name="tparamet_system_id" value="$(var tgt_system)" />
-			<param name="tparamet_component_id" value="$(var tgt_component)" />
-			<param name="fcu_protocol" value="$(var fcu_protocol)" />
-			<param from="$(var config_yaml)" />
-			<param from="$(var pluginlists_yaml)" />
+	<group>
+		<push-ros-namespace namespace="uav_$(env DRONE_ID)"/> 
+		<node pkg="mavros" exec="mavros_node">
+			<param name="fcu_url" value="$(var fcu_url)"/>
+			<param name="gcs_url" value="$(var gcs_url)"/>
+			<param name="tgt_system" value="$(var tgt_system)"/>
+			<param name="tgt_component" value="$(var tgt_component)"/>
+			<param name="fcu_protocol" value="$(var fcu_protocol)"/>
+			<param from="$(var config_yaml)"/>
+			<param from="$(var pluginlists_yaml)"/>
 		</node>
 	</group>
 </launch>
