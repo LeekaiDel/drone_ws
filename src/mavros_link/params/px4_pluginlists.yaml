@@ -1,6 +1,7 @@
 /**:    
   ros__parameters:  
     plugin_allowlist: 
+      - sys_status
       - local_position
       - imu
       # - global_position 
