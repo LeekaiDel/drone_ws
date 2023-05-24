@@ -1,13 +1,13 @@
 <launch>
 	<arg name="fcu_url" default="$(env MAVROS_FCU_URL)"/>
-
-	<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)" />
 	<arg name="fcu_port" default="$(env MAVROS_FCU_PORT)" />
+	<arg name="gcs_ip" default="$(env MAVROS_GCS_IP)" />
+
 	<arg name="gcs_url" default="udp://:$(var fcu_port)@$(var gcs_ip):14550" />
 	
 	<arg name="tgt_system"  default=""/>
 	<arg name="tgt_component"  default=""/>
-    <arg name="config_yaml" default=""/>
+    <arg name="config_yaml" default="$(find-pkg-share mavros)/px4_config.yaml"/>
     <arg name="pluginlists_yaml" default="$(find-pkg-share mavros_link)/px4_pluginlists.yaml"/>
 	<arg name="log_output" default="log" />
 	<arg name="fcu_protocol" default="v2.0" />
