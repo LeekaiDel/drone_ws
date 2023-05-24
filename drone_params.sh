@@ -13,7 +13,7 @@ export MAVROS_FCU_URL='udp://:14540@localhost:14557' #
 # Порт полетного контроллера
 export MAVROS_FCU_PORT=14101
 # Ip-адрес компьтера контролирующего полетный контроллер
-export MAVROS_GCS_IP="localhost"
+export MAVROS_GCS_IP='localhost'
 
 # Параметры ROS2
 export ROS_DOMAIN_ID=137
