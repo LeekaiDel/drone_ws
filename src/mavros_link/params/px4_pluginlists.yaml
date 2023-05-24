@@ -2,7 +2,7 @@
   ros__parameters:  
     plugin_allowlist: 
       - local_position
-      # - imu
+      - imu
       # - global_position 
       # - gps_rtk
       # - gps_status 
