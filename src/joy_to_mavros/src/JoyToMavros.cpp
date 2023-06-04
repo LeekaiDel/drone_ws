@@ -13,8 +13,8 @@ using namespace chrono_literals;
 class JoyToMavros
 {
     public:
-        float horizontal_vel_max = 2.0;
-        float vertical_vel_max = 2.0;
+        float horizontal_vel_max = 0.5;
+        float vertical_vel_max = 0.5;
         float angular_vel_max = 0.3;
 
         sensor_msgs::msg::Joy joy_data;
@@ -43,7 +43,7 @@ class JoyToMavros
             goal_twist.twist.linear.x = joy_data.axes[4] * horizontal_vel_max;
             goal_twist.twist.linear.y = joy_data.axes[3] * horizontal_vel_max;
             goal_twist.twist.linear.z = joy_data.axes[1] * vertical_vel_max;  
-            goal_twist.twist.angular.z = joy_data.axes[0] * angular_vel_max ;  
+            goal_twist.twist.angular.z = joy_data.axes[0] * angular_vel_max;  
             twist_pub->publish(goal_twist);
         }
 };
