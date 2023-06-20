@@ -2,18 +2,34 @@
 >it's essential ws for using mavros and PX4 with my custom pckgs
 
 ### base installs:
-    sudo apt install ros-noetic-tf2-sensor-msgs
-  
+```
+sudo apt install ros-noetic-tf2-sensor-msgs
+```
   
 ### .bashrc confs:
-    echo "source ~/drone_ws/devel/setup.bash" >> ~/.bashrc
-    echo "source ~/drone_ws/drone_params.sh" >> ~/.bashrc
-    source ~/.bashrc
+```
+echo "source ~/drone_ws/devel/setup.bash" >> ~/.bashrc
+echo "source ~/drone_ws/drone_params.sh" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### Install mavros
+```
+sudo apt install ros-noetic-mavros ros-noetic-mavros-extras
+```
+
+### Install geodetic lib
+
+```
+sudo /opt/ros/noetic/lib/mavros/install_geographiclib_datasets.sh
+```
   
 ### extent to .bashrc:
-    export ROS_MASTER_URI=http://192.168.1.254:11311/
-    export ROS_IP=192.168.1.254
-    export ROS_HOSTNAME=192.168.1.254
+```
+export ROS_MASTER_URI=http://192.168.1.254:11311/
+export ROS_IP=192.168.1.254
+export ROS_HOSTNAME=192.168.1.254
+```
 
 ### Описание пакетов:
 * [drone_essentials](src/drone_essentials): основной пакет для запуска всех необходимых для работы узлов
