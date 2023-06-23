@@ -15,6 +15,10 @@ class PositionalRegulator
 {
     public:
         rclcpp::Node::SharedPtr node;
+        rclcpp::CallbackGroup::SharedPtr cb_grp_client_;
+        rclcpp::TimerBase::SharedPtr main_timer;
+        rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr local_pose_sub;
+        rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr vector_twist_pub;
 
         float Kp_horizontal = 1.0;
         float Ki_horizontal = 0.0;
@@ -24,8 +28,8 @@ class PositionalRegulator
         float Ki_vertical = 0.0;
         float Kd_vertical = 1.0;
         
-        double start_time = node->get_clock()->now().seconds(); 
-        double dt = 0.0;
+        double start_time; //node->get_clock()->now().seconds(); 
+        double dt; //node->get_clock()->now().seconds() - start_time;
 
         geometry_msgs::msg::PoseStamped navigation;
         geometry_msgs::msg::PoseStamped goal_position;
@@ -34,7 +38,6 @@ class PositionalRegulator
         PositionalRegulator(rclcpp::Node::SharedPtr nh);
 
     private:
-        rclcpp::TimerBase::SharedPtr main_timer;
         vector<double> P_vector = {0.0, 0.0, 0.0};
         vector<double> I_vector = {0.0, 0.0, 0.0};
         vector<double> D_vector = {0.0, 0.0, 0.0};
