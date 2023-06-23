@@ -17,6 +17,7 @@ class PositionalRegulator
         rclcpp::Node::SharedPtr node;
         rclcpp::CallbackGroup::SharedPtr cb_grp_client_;
         rclcpp::TimerBase::SharedPtr main_timer;
+        rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr goal_pose_sub;
         rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr local_pose_sub;
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr vector_twist_pub;
 
@@ -31,9 +32,9 @@ class PositionalRegulator
         double start_time; //node->get_clock()->now().seconds(); 
         double dt; //node->get_clock()->now().seconds() - start_time;
 
-        geometry_msgs::msg::PoseStamped navigation;
+        geometry_msgs::msg::PoseStamped local_pose;
         geometry_msgs::msg::PoseStamped goal_position;
-        geometry_msgs::msg::TwistStamped goal_twist;
+        geometry_msgs::msg::TwistStamped vector_twist;
 
         PositionalRegulator(rclcpp::Node::SharedPtr nh);
 
@@ -47,6 +48,6 @@ class PositionalRegulator
 
         void CalcVectorVelocity();
         void MainTimer();
-        void NavigationCb(geometry_msgs::msg::PoseStamped::SharedPtr msg);
-
+        void LocalPoseCb(geometry_msgs::msg::PoseStamped::SharedPtr msg);
+        void GoalPoseCb(geometry_msgs::msg::PoseStamped::SharedPtr msg);
 };
