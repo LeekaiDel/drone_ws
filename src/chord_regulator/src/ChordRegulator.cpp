@@ -72,7 +72,8 @@ Eigen::Vector2d ChordRegulator::PointProjCoordsOnSegment2D(Eigen::Vector2d point
 // Получаем маркер рисующий вектор в виде стрелки в RVIZ2
 visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eigen::Vector2d> chord, 
                                                                 rclcpp::Node::SharedPtr nh, 
-                                                                int id)
+                                                                int id,
+                                                                int color_code)
 {
     visualization_msgs::msg::Marker marker;
     marker.header.frame_id = "map";
@@ -89,15 +90,36 @@ visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eige
     end_arrow.y = chord[1][1];
     marker.points.push_back(start_arrow);
     marker.points.push_back(end_arrow);
-    marker.color.a = 1.0;
-    marker.color.r = 1.0;
-    marker.color.g = 0.0;
-    marker.color.b = 0.0;
+    if (color_code == 0)
+    {
+        marker.color.a = 1.0;
+        marker.color.r = 1.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
+    }
+    else
+    {
+        marker.color.a = 1.0;
+        marker.color.r = 0.0;
+        marker.color.g = 1.0;
+        marker.color.b = 0.0;
+    }
     marker.scale.x = 0.1;
     marker.scale.y = 0.2;
     // std::cout << "create Arrow " << id << std::endl;
     return marker;
 }
+
+// Получаем направление курса вектора отрезка
+float ChordRegulator::CalcChordCourse(std::vector<Eigen::Vector2d> chord)
+{
+    Eigen::Vector2d chord_direction = chord[1] - chord[0];
+    return atan2(chord_direction[1], chord_direction[0]);
+}
+
+float ChordRegulator::RadToDeg(float rad) { return rad * 180 / M_PI; }
+
+float ChordRegulator::DegToRad(float deg) { return deg * M_PI / 180; }
 
 
 int main(int argc, char *argv[])
@@ -105,13 +127,13 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("chord_regulator_node");
 
-    Eigen::Vector2d robot = {0, 0};
+    Eigen::Vector2d robot = {6, 10};
 
     std::vector<Eigen::Vector2d> waypoint_vector;
-    for(int i = 0; i < 100; ++i)
+    for(int i = 0; i < 2; ++i)
     {
         Eigen::Vector2d point;
-        point = {i* 2.34, i * 6.43};
+        point = {i * 5, i * 5};
         waypoint_vector.push_back(point);
     }
     std::cout << "waypoint_vector.size() " << waypoint_vector.size() << std::endl;
@@ -124,14 +146,35 @@ int main(int argc, char *argv[])
     int g = 0;
     for (auto chord : chords_vector)
     {
-        ch_reg.vector_viz_pub->publish(ch_reg.GetVectorMarker(chord, ch_reg.node, g));
-        // std::cout << "====== " << g << " ======" << std::endl;
-        // std::cout << "R: " << (chord[1] - chord[0]).norm() << std::endl;
-        // std::cout << "====== ======" << std::endl;
-        // ch_reg.PointProjCoordsOnSegment2D(robot, chord[0], chord[1]);
-        // std::cout << "X: " << chord[1] << " Y: " << chord[1] << std::endl;
+        ch_reg.vector_viz_pub->publish(ch_reg.GetVectorMarker(chord, ch_reg.node, g, 0));
+//
+        Eigen::Vector2d pose_projection_on_chord = ch_reg.PointProjCoordsOnSegment2D(robot, chord[0], chord[1]);
+        
+        ch_reg.dist_to_chord = (pose_projection_on_chord - robot).norm();
+        Eigen::Vector2d leading_vector;
+        if (abs(ch_reg.dist_to_chord) < ch_reg.min_dist_to_chord)
+        {
+            float k = ch_reg.dist_to_chord / ch_reg.min_dist_to_chord;
+            std::vector<Eigen::Vector2d> local_chord;
+            local_chord.push_back(chord[0] - robot);
+            local_chord.push_back(chord[1] - robot);
+            leading_vector = (local_chord[1] - local_chord[0]) + k * ((pose_projection_on_chord - robot) - (local_chord[1] - local_chord[0]));
+        }
+        else
+        {
+            leading_vector = pose_projection_on_chord - robot;
+        }
+        std::vector<Eigen::Vector2d> local_leading_vector;
+        local_leading_vector.push_back(robot);
+        local_leading_vector.push_back(leading_vector.normalized() * ((chord[1] - robot).norm()) + robot); // 
+        ch_reg.vector_viz_pub->publish(ch_reg.GetVectorMarker(local_leading_vector, ch_reg.node, 500, 1));
         g++;
     }
+//
+
+
+
+//
     rclcpp::executors::MultiThreadedExecutor exe;
     exe.add_node(nh);
     exe.spin();
