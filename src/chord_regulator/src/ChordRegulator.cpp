@@ -8,14 +8,14 @@ ChordRegulator::ChordRegulator(rclcpp::Node::SharedPtr nh)
 }
 
 // Функция группировки путевых точек в вектор хорд
-std::vector<std::vector<Eigen::Vector2d>> ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector2d> waypoint_vector)
+std::vector<std::vector<Eigen::Vector3d>> ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector)
 {
-    std::vector<std::vector<Eigen::Vector2d>> chords_vector;
+    std::vector<std::vector<Eigen::Vector3d>> chords_vector;
     
     // Собираем пары путевых точек в хорды
     for(int i = 0; i < waypoint_vector.size() - 1; ++i)
     {
-        std::vector<Eigen::Vector2d> chord;
+        std::vector<Eigen::Vector3d> chord;
         chord.push_back(waypoint_vector[i]);
         chord.push_back(waypoint_vector[i + 1]);
         chords_vector.push_back(chord);
@@ -34,22 +34,22 @@ std::vector<std::vector<Eigen::Vector2d>> ChordRegulator::WaypointVectorToChordV
 }
 
 // Вычисляем длину хорды
-float ChordRegulator::LengthOfChord(std::vector<Eigen::Vector2d> chord)
+float ChordRegulator::LengthOfChord(std::vector<Eigen::Vector3d> chord)
 {
     return (chord[1] - chord[0]).norm();
 }
 
 // Находим проекцию точки на отрезок
-Eigen::Vector2d ChordRegulator::PointProjCoordsOnSegment2D(Eigen::Vector2d point, Eigen::Vector2d segment_start, Eigen::Vector2d segment_end)
+Eigen::Vector3d ChordRegulator::PointProjCoordsOnSegment3D(Eigen::Vector3d point, Eigen::Vector3d segment_start, Eigen::Vector3d segment_end)
 {
-    Eigen::Vector2d segment_direction = segment_end - segment_start;
+    Eigen::Vector3d segment_direction = segment_end - segment_start;
     double segment_length = segment_direction.norm();
     std::cout << "segment_length: " << segment_length << std::endl; 
     segment_direction.normalize();
     std::cout << "segment_direction.normalize(): " << segment_direction.transpose() << std::endl; 
     // std::cout << "segment_direction.norm(): " << segment_direction.norm() << std::endl; 
 
-    Eigen::Vector2d point_direction = point - segment_start;
+    Eigen::Vector3d point_direction = point - segment_start;
     std::cout << "point_direction: " << point_direction.transpose() << std::endl; 
     std::cout << "segment_direction: " << segment_direction.transpose() << std::endl; 
     double point_distance = point_direction.dot(segment_direction);
@@ -70,7 +70,7 @@ Eigen::Vector2d ChordRegulator::PointProjCoordsOnSegment2D(Eigen::Vector2d point
 }
 
 // Получаем маркер рисующий вектор в виде стрелки в RVIZ2
-visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eigen::Vector2d> chord, 
+visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eigen::Vector3d> chord, 
                                                                 rclcpp::Node::SharedPtr nh, 
                                                                 int id,
                                                                 int color_code)
@@ -85,9 +85,11 @@ visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eige
     geometry_msgs::msg::Point start_arrow;
     start_arrow.x = chord[0][0];
     start_arrow.y = chord[0][1];
+    start_arrow.z = chord[0][2];
     geometry_msgs::msg::Point end_arrow;
     end_arrow.x = chord[1][0];
     end_arrow.y = chord[1][1];
+    end_arrow.z = chord[1][2];
     marker.points.push_back(start_arrow);
     marker.points.push_back(end_arrow);
     if (color_code == 0)
@@ -111,9 +113,9 @@ visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eige
 }
 
 // Получаем направление курса вектора отрезка
-float ChordRegulator::CalcChordCourse(std::vector<Eigen::Vector2d> chord)
+float ChordRegulator::CalcChordCourse(std::vector<Eigen::Vector3d> chord)
 {
-    Eigen::Vector2d chord_direction = chord[1] - chord[0];
+    Eigen::Vector3d chord_direction = chord[1] - chord[0];
     return atan2(chord_direction[1], chord_direction[0]);
 }
 
@@ -127,18 +129,18 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("chord_regulator_node");
 
-    Eigen::Vector2d robot = {6, 10};
+    Eigen::Vector3d robot = {62, 60, 2.0};
 
-    std::vector<Eigen::Vector2d> waypoint_vector;
+    std::vector<Eigen::Vector3d> waypoint_vector;
     for(int i = 0; i < 2; ++i)
     {
-        Eigen::Vector2d point;
-        point = {i * 5, i * 5};
+        Eigen::Vector3d point;
+        point = {i * 50, i * 50, 2.0};
         waypoint_vector.push_back(point);
     }
     std::cout << "waypoint_vector.size() " << waypoint_vector.size() << std::endl;
     
-    std::vector<std::vector<Eigen::Vector2d>> chords_vector;
+    std::vector<std::vector<Eigen::Vector3d>> chords_vector;
     ChordRegulator ch_reg(rclcpp::Node::make_shared("chord_regulator_node"));
     chords_vector = ch_reg.WaypointVectorToChordVector(waypoint_vector);
     std::cout << "chords_vector.size() " << chords_vector.size() << std::endl;
@@ -148,14 +150,14 @@ int main(int argc, char *argv[])
     {
         ch_reg.vector_viz_pub->publish(ch_reg.GetVectorMarker(chord, ch_reg.node, g, 0));
 //
-        Eigen::Vector2d pose_projection_on_chord = ch_reg.PointProjCoordsOnSegment2D(robot, chord[0], chord[1]);
+        Eigen::Vector3d pose_projection_on_chord = ch_reg.PointProjCoordsOnSegment3D(robot, chord[0], chord[1]);
         
         ch_reg.dist_to_chord = (pose_projection_on_chord - robot).norm();
-        Eigen::Vector2d leading_vector;
+        Eigen::Vector3d leading_vector;
         if (abs(ch_reg.dist_to_chord) < ch_reg.min_dist_to_chord)
         {
             float k = ch_reg.dist_to_chord / ch_reg.min_dist_to_chord;
-            std::vector<Eigen::Vector2d> local_chord;
+            std::vector<Eigen::Vector3d> local_chord;
             local_chord.push_back(chord[0] - robot);
             local_chord.push_back(chord[1] - robot);
             leading_vector = (local_chord[1] - local_chord[0]) + k * ((pose_projection_on_chord - robot) - (local_chord[1] - local_chord[0]));
@@ -164,9 +166,9 @@ int main(int argc, char *argv[])
         {
             leading_vector = pose_projection_on_chord - robot;
         }
-        std::vector<Eigen::Vector2d> local_leading_vector;
+        std::vector<Eigen::Vector3d> local_leading_vector;
         local_leading_vector.push_back(robot);
-        local_leading_vector.push_back(leading_vector.normalized() * ((chord[1] - robot).norm()) + robot); // 
+        local_leading_vector.push_back(leading_vector + robot); // .normalized() * ((chord[1] - robot).norm())
         ch_reg.vector_viz_pub->publish(ch_reg.GetVectorMarker(local_leading_vector, ch_reg.node, 500, 1));
         g++;
     }

@@ -23,18 +23,18 @@ class ChordRegulator
         // Конструктор
         ChordRegulator(rclcpp::Node::SharedPtr nh);
         // Функция группировки путевых точек в вектор хорд
-        std::vector<std::vector<Eigen::Vector2d>> WaypointVectorToChordVector(std::vector<Eigen::Vector2d> waypoint_vector);
+        std::vector<std::vector<Eigen::Vector3d>> WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector);
         // Вычисляем длину хорды
-        float LengthOfChord(std::vector<Eigen::Vector2d> chord);
+        float LengthOfChord(std::vector<Eigen::Vector3d> chord);
         // Получаем проекцию точки на ОТРЕЗОК
-        Eigen::Vector2d PointProjCoordsOnSegment2D(Eigen::Vector2d point, Eigen::Vector2d segment_start, Eigen::Vector2d segment_end);
+        Eigen::Vector3d PointProjCoordsOnSegment3D(Eigen::Vector3d point, Eigen::Vector3d segment_start, Eigen::Vector3d segment_end);
         // Получаем маркер рисующий вектор в виде стрелки в RVIZ2
-        visualization_msgs::msg::Marker GetVectorMarker(std::vector<Eigen::Vector2d> chord, 
+        visualization_msgs::msg::Marker GetVectorMarker(std::vector<Eigen::Vector3d> chord, 
                                                         rclcpp::Node::SharedPtr nh, 
                                                         int id,
                                                         int color_code);
         // Получаем направление курса вектора отрезка
-        float CalcChordCourse(std::vector<Eigen::Vector2d> chord);
+        float CalcChordCourse(std::vector<Eigen::Vector3d> chord);
         
         float RadToDeg(float rad); 
 
