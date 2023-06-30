@@ -34,11 +34,25 @@ geometry_msgs
 visualization_msgs
 Eigen3)
 
-add_executable(chord_regulator src/ChordRegulator.cpp include/chord_regulator/ChordRegulator.h)
-ament_target_dependencies(chord_regulator ${dependencies})
+# reg
+add_library(chord_regulator src/ChordRegulator.cpp include/chord_regulator/ChordRegulator.h)
+ament_target_dependencies(chord_regulator
+    ${dependencies})
 
 install(TARGETS chord_regulator
-  EXPORT chord_regulator
+    EXPORT chord_regulator
+    LIBRARY DESTINATION lib/chord_regulator
+    ARCHIVE DESTINATION lib/chord_regulator
+    RUNTIME DESTINATION lib/chord_regulator
+    INCLUDES DESTINATION include/chord_regulator
+    )
+
+add_executable(controller src/controller_deb.cpp include/chord_regulator/controller_deb.h)
+ament_target_dependencies(controller ${dependencies})
+target_link_libraries(controller chord_regulator)
+
+install(TARGETS controller
+  EXPORT controller
   DESTINATION lib/${PROJECT_NAME}
   INCLUDES DESTINATION include/${PROJECT_NAME}/
   )
