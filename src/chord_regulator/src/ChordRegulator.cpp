@@ -51,15 +51,9 @@ Eigen::Vector3d ChordRegulator::PointProjCoordsOnSegment3D(Eigen::Vector3d point
 {
     Eigen::Vector3d segment_direction = segment_end - segment_start;
     double segment_length = segment_direction.norm();
-    // std::cout << "segment_length: " << segment_length << std::endl; 
     segment_direction.normalize();
-    // std::cout << "segment_direction.normalize(): " << segment_direction.transpose() << std::endl; 
-    // std::cout << "segment_direction.norm(): " << segment_direction.norm() << std::endl; 
     Eigen::Vector3d point_direction = point - segment_start;
-    // std::cout << "point_direction: " << point_direction.transpose() << std::endl; 
-    // std::cout << "segment_direction: " << segment_direction.transpose() << std::endl; 
     double point_distance = point_direction.dot(segment_direction);
-    // std::cout << "point_distance: " << point_distance << std::endl; 
 
     if (point_distance < 0)
     {
@@ -117,6 +111,7 @@ visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eige
     return marker;
 }
 
+// Возвращаем ведущий вектор в локальной системе координат робота
 Eigen::Vector3d ChordRegulator::GetLeadingVector()
 {
     for (int i = 0; i < ChordRegulator::chords_vector.size(); ++i)
@@ -129,30 +124,28 @@ Eigen::Vector3d ChordRegulator::GetLeadingVector()
     {
         std::vector<Eigen::Vector3d> chord = ChordRegulator::chords_vector[ChordRegulator::chord_list_id];
         Eigen::Vector3d pose_projection_on_chord = ChordRegulator::PointProjCoordsOnSegment3D(ChordRegulator::robot_pose, chord[0], chord[1]);
-
+        // Находим локальные координаты хорды относительно робота
         std::vector<Eigen::Vector3d> local_chord;
         local_chord.push_back(chord[0] - ChordRegulator::robot_pose);
         local_chord.push_back(chord[1] - ChordRegulator::robot_pose);
-        
+        // Находим локальные координаты проекции позиции робота на отрезок относительно робота
         ChordRegulator::dist_to_chord = (pose_projection_on_chord - ChordRegulator::robot_pose).norm();
-        if (abs(ChordRegulator::dist_to_chord) < ChordRegulator::min_dist_to_chord)
+        // Находим ведущий вектор. Этот вектор управляет движением робота - куда двигаться вдоль прямой
+        if (abs(ChordRegulator::dist_to_chord) < ChordRegulator::min_dist_to_chord) // Если робот расположен ближе чем минимальное растояние от робота к проекции позиции робота на хорду переходим от наводящего вектора на хорду к направляющему вектору на конец хорды
         {
-            float k = ChordRegulator::dist_to_chord / ChordRegulator::min_dist_to_chord;
-            leading_vector = (local_chord[1]) + k * ((pose_projection_on_chord - ChordRegulator::robot_pose) - (local_chord[1]));
+            float k = ChordRegulator::dist_to_chord / ChordRegulator::min_dist_to_chord; 
+            leading_vector = local_chord[1] + k * (pose_projection_on_chord - ChordRegulator::robot_pose - local_chord[1]);
         }
-        else
+        else    // Если робот расположен дальше чем минимальное расстояние от робота к проекции позиции робота на хорду, то следуем по наводящему вектору к проекции позиции робота на хорду
         {
             leading_vector = pose_projection_on_chord - ChordRegulator::robot_pose;
         }   
         // Проверяем условие переключения между отрезками
-        // if((chord[1] - ChordRegulator::robot_pose).norm() < ChordRegulator::min_dist_to_chord)
-        // {
-        //     ChordRegulator::chord_list_id += 1;
-        // }
-        // Приводим ведущий вектор к единичному виду
-        // leading_vector = leading_vector.normalized();
-        // leading_vector * (local_chord[1]).norm();
-        // Отображаем направляющий вектор в RVIZ
+        if(local_chord[1].norm() < ChordRegulator::min_dist_to_chord && ChordRegulator::chord_list_id < ChordRegulator::chords_vector.size() - 1)
+        {
+            ChordRegulator::chord_list_id += 1;
+        }
+        // Отображаем направляющий вектор в RVIZ в глобальной системе координат
         std::vector<Eigen::Vector3d> local_leading_vector;
         local_leading_vector.push_back(ChordRegulator::robot_pose);
         local_leading_vector.push_back(leading_vector + ChordRegulator::robot_pose);

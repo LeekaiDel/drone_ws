@@ -23,9 +23,9 @@ class Controller
         rclcpp::CallbackGroup::SharedPtr cb_grp_client_;
         rclcpp::TimerBase::SharedPtr main_timer;
         geometry_msgs::msg::PoseStamped drone_pose;
-        geometry_msgs::msg::PoseStamped goal_pose;
+        geometry_msgs::msg::TwistStamped goal_pose;
         rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr local_pose_sub;
-        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr vector_pose_pub;
+        rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr vector_pose_pub;
 
         ChordRegulator regulator;
 
