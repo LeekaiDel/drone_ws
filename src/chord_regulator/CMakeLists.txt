@@ -47,12 +47,12 @@ install(TARGETS chord_regulator
     INCLUDES DESTINATION include/chord_regulator
     )
 
-add_executable(controller src/controller_deb.cpp include/chord_regulator/controller_deb.h)
-ament_target_dependencies(controller ${dependencies})
-target_link_libraries(controller chord_regulator)
+add_executable(chord_reg_node src/ChordRegNode.cpp include/chord_regulator/ChordRegNode.h)
+ament_target_dependencies(chord_reg_node ${dependencies})
+target_link_libraries(chord_reg_node chord_regulator)
 
-install(TARGETS controller
-  EXPORT controller
+install(TARGETS chord_reg_node
+  EXPORT chord_reg_node
   DESTINATION lib/${PROJECT_NAME}
   INCLUDES DESTINATION include/${PROJECT_NAME}/
   )

@@ -13,7 +13,7 @@ void ChordRegulator::InitNh(rclcpp::Node::SharedPtr nh)
 }
 
 // Функция группировки путевых точек в вектор хорд
-bool ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector)
+int ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector)
 {   
     ChordRegulator::chord_list_id = 0;
     ChordRegulator::chords_vector = std::vector<std::vector<Eigen::Vector3d>>();
@@ -34,10 +34,10 @@ bool ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector3d> wa
             ChordRegulator::chords_vector.erase(begin_index + i);
         }
     }
-    if (ChordRegulator::chords_vector.size() > 0)
-        return true;
-    else 
-        return false;
+    // if (ChordRegulator::chords_vector.size() > 0)
+    //     return true;
+    // else 
+    return ChordRegulator::chords_vector.size();
 }
 
 // Вычисляем длину хорды
@@ -131,9 +131,9 @@ Eigen::Vector3d ChordRegulator::GetLeadingVector()
         // Находим локальные координаты проекции позиции робота на отрезок относительно робота
         ChordRegulator::dist_to_chord = (pose_projection_on_chord - ChordRegulator::robot_pose).norm();
         // Находим ведущий вектор. Этот вектор управляет движением робота - куда двигаться вдоль прямой
-        if (abs(ChordRegulator::dist_to_chord) < ChordRegulator::min_dist_to_chord) // Если робот расположен ближе чем минимальное растояние от робота к проекции позиции робота на хорду переходим от наводящего вектора на хорду к направляющему вектору на конец хорды
+        if (ChordRegulator::dist_to_chord < ChordRegulator::min_dist_to_chord) // Если робот расположен ближе чем минимальное растояние от робота к проекции позиции робота на хорду переходим от наводящего вектора на хорду к направляющему вектору на конец хорды
         {
-            float k = ChordRegulator::dist_to_chord / ChordRegulator::min_dist_to_chord; 
+            float k = (ChordRegulator::dist_to_chord / 2) / ChordRegulator::min_dist_to_chord; 
             leading_vector = local_chord[1] + k * (pose_projection_on_chord - ChordRegulator::robot_pose - local_chord[1]);
         }
         else    // Если робот расположен дальше чем минимальное расстояние от робота к проекции позиции робота на хорду, то следуем по наводящему вектору к проекции позиции робота на хорду

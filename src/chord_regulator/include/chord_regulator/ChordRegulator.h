@@ -15,10 +15,9 @@ class ChordRegulator
         rclcpp::TimerBase::SharedPtr main_timer;
         rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr trajectory_viz_pub;           // Паблишер для отображения траектории в RVIZ2
         rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr leading_vector_viz_pub;       // Паблишер для отображения направляющего вектора в RVIZ2
-
         // Параметры настроек
         float accepteble_chord_length = 0.1;                        // Максимальный допуск пересечения точек для сортировки точек и группировки их в отрезки
-        float min_dist_to_chord = 4.0;                              // Расстояние срабатывания отклонения направляющего вектора при следовании к траектории
+        float min_dist_to_chord = 5.0;                              // Расстояние срабатывания отклонения направляющего вектора при следовании к траектории
         // Глобальные переменные
         Eigen::Vector3d robot_pose;                                 // Координаты робота выраженные в трехмерном векторе
         int chord_list_id = 0;                                      // id текущей хорды на исполнении
@@ -29,7 +28,7 @@ class ChordRegulator
         ChordRegulator();
         void InitNh(rclcpp::Node::SharedPtr nh);
         // Функция группировки путевых точек в вектор хорд
-        bool WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector);
+        int WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector);
         // Вычисляем длину хорды
         float LengthOfChord(std::vector<Eigen::Vector3d> chord);
         // Получаем проекцию точки на ОТРЕЗОК
@@ -43,6 +42,5 @@ class ChordRegulator
 
         float RadToDeg(float rad); 
 
-        float DegToRad(float deg); 
-
+        float DegToRad(float deg);
 };
