@@ -16,28 +16,28 @@ void ChordRegulator::InitNh(rclcpp::Node::SharedPtr nh)
 int ChordRegulator::WaypointVectorToChordVector(std::vector<Eigen::Vector3d> waypoint_vector)
 {   
     ChordRegulator::chord_list_id = 0;
-    ChordRegulator::chords_vector = std::vector<std::vector<Eigen::Vector3d>>();
+    trajectory = std::vector<std::vector<Eigen::Vector3d>>();
     // Собираем пары путевых точек в хорды
     for(int i = 0; i < waypoint_vector.size() - 1; ++i)
     {
         std::vector<Eigen::Vector3d> chord;
         chord.push_back(waypoint_vector[i]);
         chord.push_back(waypoint_vector[i + 1]);
-        ChordRegulator::chords_vector.push_back(chord);
+        trajectory.push_back(chord);
     }
     // Находим хорды с длиной равной приблизительно 0.0 и удаляем их из последовательности
-    for(int i = 0; i < ChordRegulator::chords_vector.size(); ++i)
+    for(int i = 0; i < trajectory.size(); ++i)
     {
-        if (LengthOfChord(ChordRegulator::chords_vector[i]) < accepteble_chord_length)
+        if (LengthOfChord(trajectory[i]) < accepteble_chord_length)
         {
-            auto begin_index = ChordRegulator::chords_vector.cbegin();
-            ChordRegulator::chords_vector.erase(begin_index + i);
+            auto begin_index = trajectory.cbegin();
+            trajectory.erase(begin_index + i);
         }
     }
-    // if (ChordRegulator::chords_vector.size() > 0)
+    // if (trajectory.size() > 0)
     //     return true;
     // else 
-    return ChordRegulator::chords_vector.size();
+    return trajectory.size();
 }
 
 // Вычисляем длину хорды
@@ -70,12 +70,16 @@ Eigen::Vector3d ChordRegulator::PointProjCoordsOnSegment3D(Eigen::Vector3d point
 }
 
 // Получаем маркер рисующий вектор в виде стрелки в RVIZ2
-visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eigen::Vector3d> chord,  
-                                                                int id,
-                                                                int color_code)
+visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker
+(
+    std::vector<Eigen::Vector3d> chord,  
+    int id,
+    int color_code,
+    const char* frameid
+)
 {
     visualization_msgs::msg::Marker marker;
-    marker.header.frame_id = "map";
+    marker.header.frame_id = frameid; // "map";
     marker.header.stamp = ChordRegulator::node->get_clock()->now();
     marker.ns = "chords";
     marker.id = id;
@@ -114,42 +118,76 @@ visualization_msgs::msg::Marker ChordRegulator::GetVectorMarker(std::vector<Eige
 // Возвращаем ведущий вектор в локальной системе координат робота
 Eigen::Vector3d ChordRegulator::GetLeadingVector()
 {
-    for (int i = 0; i < ChordRegulator::chords_vector.size(); ++i)
+    // Отображаем траекторию в rviz
+    for (int i = 0; i < trajectory.size(); ++i)
     {
-        ChordRegulator::trajectory_viz_pub->publish(ChordRegulator::GetVectorMarker(ChordRegulator::chords_vector[i], i, 0));
+        trajectory_viz_pub->publish(GetVectorMarker(trajectory[i], i, 0, "map"));
     }
 
     Eigen::Vector3d leading_vector;
-    if (ChordRegulator::chords_vector.size() > 0)
+    if (trajectory.size() > 0)
     {
-        std::vector<Eigen::Vector3d> chord = ChordRegulator::chords_vector[ChordRegulator::chord_list_id];
-        Eigen::Vector3d pose_projection_on_chord = ChordRegulator::PointProjCoordsOnSegment3D(ChordRegulator::robot_pose, chord[0], chord[1]);
+        std::vector<Eigen::Vector3d> chord = trajectory[chord_list_id];
+        Eigen::Vector3d pose_projection_on_chord = PointProjCoordsOnSegment3D(robot_pose, chord[0], chord[1]);
+
+        // Находим локальное расстояние от тела к хорде
+        dist_to_chord = (pose_projection_on_chord - robot_pose).norm();
+
+
+        // Вычисляем полную длину маршрута
+        full_length_path = 0.0;
+        // Прибавляем локальное расстояние от тела к ближайшей хорде
+        full_length_path = dist_to_chord + (chord[1] - pose_projection_on_chord).norm();
+        // Прибавляем длины оставшихся хорд
+        for (int i = chord_list_id; i < trajectory.size() - 1; ++i)
+        {
+            full_length_path += (trajectory[i + 1][1] - trajectory[i + 1][0]).norm();
+        }
+
+
+
         // Находим локальные координаты хорды относительно робота
         std::vector<Eigen::Vector3d> local_chord;
-        local_chord.push_back(chord[0] - ChordRegulator::robot_pose);
-        local_chord.push_back(chord[1] - ChordRegulator::robot_pose);
+        local_chord.push_back(chord[0] - robot_pose);
+        local_chord.push_back(chord[1] - robot_pose);
+
         // Находим локальные координаты проекции позиции робота на отрезок относительно робота
-        ChordRegulator::dist_to_chord = (pose_projection_on_chord - ChordRegulator::robot_pose).norm();
+        Eigen::Vector3d local_pose_projection_on_chord = pose_projection_on_chord - robot_pose;
+
         // Находим ведущий вектор. Этот вектор управляет движением робота - куда двигаться вдоль прямой
-        if (ChordRegulator::dist_to_chord < ChordRegulator::min_dist_to_chord) // Если робот расположен ближе чем минимальное растояние от робота к проекции позиции робота на хорду переходим от наводящего вектора на хорду к направляющему вектору на конец хорды
+        if (dist_to_chord < min_dist_to_chord)              // << Если робот расположен ближе чем минимальное растояние от робота к проекции позиции робота на хорду переходим от наводящего вектора на хорду к направляющему вектору на конец хорды
         {
-            float k = (ChordRegulator::dist_to_chord / 2) / ChordRegulator::min_dist_to_chord; 
-            leading_vector = local_chord[1] + k * (pose_projection_on_chord - ChordRegulator::robot_pose - local_chord[1]);
+            float k = dist_to_chord / min_dist_to_chord; 
+            leading_vector = local_chord[1] - local_pose_projection_on_chord + k * (local_pose_projection_on_chord - (local_chord[1] - local_pose_projection_on_chord));
         }
-        else    // Если робот расположен дальше чем минимальное расстояние от робота к проекции позиции робота на хорду, то следуем по наводящему вектору к проекции позиции робота на хорду
+        else                                                // << Если робот расположен дальше чем минимальное расстояние от робота к проекции позиции робота на хорду, то следуем по наводящему вектору к проекции позиции робота на хорду
         {
-            leading_vector = pose_projection_on_chord - ChordRegulator::robot_pose;
-        }   
+            leading_vector = local_pose_projection_on_chord;
+        }
+
+/*
         // Проверяем условие переключения между отрезками
-        if(local_chord[1].norm() < ChordRegulator::min_dist_to_chord && ChordRegulator::chord_list_id < ChordRegulator::chords_vector.size() - 1)
+        if(local_chord[1].norm() < ChordRegulator::min_dist_to_chord && ChordRegulator::chord_list_id < trajectory.size() - 1)
         {
-            ChordRegulator::chord_list_id += 1;
+            chord_list_id += 1;
         }
+*/
+        // Проверяем условие переключения между отрезками
+        if ((pose_projection_on_chord - chord[1]).norm() < min_dist_to_chord && chord_list_id < trajectory.size() - 1)
+        {
+            chord_list_id += 1;
+        }
+        else if (chord_list_id >= trajectory.size() - 1 && local_chord[1].norm() < min_dist_to_chord)
+        {
+            up_index = 1;
+        }
+
         // Отображаем направляющий вектор в RVIZ в глобальной системе координат
         std::vector<Eigen::Vector3d> local_leading_vector;
-        local_leading_vector.push_back(ChordRegulator::robot_pose);
-        local_leading_vector.push_back(leading_vector + ChordRegulator::robot_pose);
-        ChordRegulator::leading_vector_viz_pub->publish(ChordRegulator::GetVectorMarker(local_leading_vector, 500, 1));
+        Eigen::Vector3d v_0 = {0, 0, 0};
+        local_leading_vector.push_back(robot_pose); // ChordRegulator::robot_pose
+        local_leading_vector.push_back(leading_vector + robot_pose); // + ChordRegulator::robot_pose
+        ChordRegulator::leading_vector_viz_pub->publish(ChordRegulator::GetVectorMarker(local_leading_vector, 500, 1, "map"));
     }
     else
     {
