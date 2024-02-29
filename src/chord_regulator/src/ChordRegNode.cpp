@@ -57,7 +57,6 @@ void ChordRegNode::nav_cb(geometry_msgs::msg::PoseStamped::SharedPtr msg)
 void ChordRegNode::main_Timer()
 {   
     Eigen::Vector3d leading_vector = regulator.GetLeadingVector();
-    // leading_vector = leading_vector.normalized() * 2.5;
     goal_pose.header.frame_id = "base_link";
     goal_pose.twist.linear.x = leading_vector[0];// + robot_pose[0];
     goal_pose.twist.linear.y = leading_vector[1];// + robot_pose[1];
